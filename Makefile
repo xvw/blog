@@ -12,3 +12,7 @@ blog-rebuild:
 
 watch:
 	stack exec blog watch
+
+deploy: blog-rebuild
+	git add _site/*
+	git push --recurse-submodules=on-demand
