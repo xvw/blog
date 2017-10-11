@@ -1,3 +1,5 @@
+all: base-build blog-rebuild
+
 base-build:
 	stack build
 
@@ -13,8 +15,14 @@ blog-rebuild:
 watch:
 	stack exec blog watch
 
-deploy: blog-rebuild
-	git add _site/*
-	git commit -m "Request deployement"
-	git push
-
+push: blog-rebuild
+	git submodule update --remote --merge
+	rsync -avr --delete --exclude='.git'  _site/ site/
+	cd site \
+	  && git checkout master \
+	  && git add . \
+	  && git commit -m 'site update' \
+	  && git push origin master
+	git add site
+	git commit -m 'site update'
+	git push origin master
