@@ -16,6 +16,5 @@ watch:
 deploy: blog-rebuild
 	git add _site/*
 	git commit -m "Request deployement"
-	git push --recurse-submodules=on-demand
-	git submodule foreach git push -u origin master
+	git push
 
