@@ -290,10 +290,10 @@ nouvelle implémentation des *Formats[fn:11]*.
 
 #+BEGIN_QUOTE
 Tout d'abord, je voudrais sincèrement remercier *Nicolas Rinaudo[fn:12]* et 
-*Gabriel Scherer[fn:13]* pour m'avoir aidé à l'a rédaction de cet article, en m'expliquant des 
-traits relatifs à *Scala[fn:13]* et pour m'avoir donné plus d'éléments théoriques sur ce que sont 
-réellement les GADTs, au delà de n'être qu'un /simple/ outil pour ajouter des types à des 
-constructeurs.
+*Gabriel Scherer[fn:13]* pour m'avoir aidé dans l'a rédaction de cet article, 
+respectivement pour m'avoir expliqué des traits relatifs à *Scala[fn:14]* 
+et pour m'avoir donné plus d'éléments théoriques sur ce que sont réellement les GADTs et 
+les travers liés à l'anaologie entre GADTs et héritage.
 #+END_QUOTE
 
 Dans un langage de programmation orienté objets, on peut faire une rapide analogie entre 
@@ -301,8 +301,94 @@ les types sommes et les *classes unifiés par des liens d'héritage*. Implément
 src_ocaml{option} que nous avons utilisé précédemment, en Scala :
 
 #+BEGIN_SRC scala
-
+sealed trait Option[+A]
+case object None extends Option[Nothing]
+case class  Some[A](value: A) extends Option[A]
 #+END_SRC
+
+Sans rentrer dans les détails de l'implémentation, on défini deux *cases*, un objet, qui n'aura
+qu'une seule valeur habitante possible (un /Singleton/), et une classe (qui elle pourra avoir 
+plus d'un habitant possible). 
+L'usage de case nous permet de supporter la correspondance de motifs et donc offrir à nos 
+instances, la déconstruction que nous avions évoqués dans les avantages des types sommes.
+
+
+Ce que l'on remarque assez vite, c'est que, pour créer cette notion d' *union discriminée*, on 
+va créer une type parent (ici, le trait src_scala{Option}) et que nos deux types enfants 
+(src_scala{None} et src_scala{Some}) *hériteront* du parent. Comme nos constructeurs sont ici 
+des *classes*, l'approche orienté objets des types sommes introduit déjà une notion de 
+*types de constructeurs*. De ce fait, je peux très facilement implémenter une fonction qui 
+ne pourrait prendre *que* des src_scala{Some(x)}, par exemple : 
+
+#+BEGIN_SRC scala
+def unwrap[A](x : Some[A]) = x.value
+#+END_SRC
+
+Obserervons maintenant l'implémentation d'une liste, le code ne varie pas beaucoup du 
+type src_scala{Option} : 
+
+#+BEGIN_SRC scala
+sealed trait MyList[+A]
+case object Empty extends MyList[Nothing]
+case class Cons[A](x: A, xs: MyList[A]) extends MyList[A] 
+#+END_SRC
+
+Comme pour la fonction src_scala{unwrap}, nous pourrions simplement l'écrire dans un objet 
+quelconque, cependant, comme nous sommes dans un langage orienté objet, considérons maintenant 
+que src_scala{head} est une méthode de notre classe src_scala{Some} :
+
+#+BEGIN_SRC scala
+sealed trait MyList[+A]
+case object Empty extends MyList[Nothing]
+case class Cons[A](x: A, xs: MyList[A]) extends MyList[A] {
+  def head() : A = x
+}
+#+END_SRC
+
+Ce qui est très amusant, c'est qu'il ne faut pas spécialement un langage /futuriste/ pour 
+encoder ce genre de types. En effet, on pourrait très facilement transposer ce code en 
+*Java*. Nous pouvons donc nous poser deux questions : 
+
+1. est-ce que les liens d'héritages produisent la /même chose/ que des GADTs ?
+2. A-t-on besoin de GADTs dans un langage orienté objet (typé statiquement) ?
+
+** Scala possède-t-il des GADTs
+
+De la même manière que Scala ne possède pas, à proprement parlé, de types sommes, Scala 
+ne possède pas de GADTs. La manière d'encoder quelque chose qui s'apparente aux types 
+sommes est l'application de caractéristiques communes aux classes liées par héritage et aux 
+types sommes. 
+
+Concernant les GADTs, Nicolas Rinaudo m'a transmis un article[fn:15] qui explique pourquoi, en jouant 
+uniquement sur l'héritage, on ne peut simuler qu'une /partie/ de l'usage des GADTs et il 
+propose une autre implémentation pour tâcher, au mieux, de profiter pleinement des GADTs. 
+
+Concrètement, dans l'exemple des listes vides/non-vides, que j'ai choisi parce que je le 
+trouve facile à appréhender (et qu'il permet d'avoir un cheminement linéaire des types sommes 
+aux GADTs en passant par les types fantômes), on ommet un autre point essentiel aux types 
+algébriques généralisés : *l'égalité entre types*. 
+
+L'article[fn:15] propose d'ajouter des 
+preuves d'égalités pour typer finement les *consommateurs de données*. On appelle cette méthode 
+*l'encodage final*. Par opposition, les GADTs typent finement les données, on appelle ça un 
+*encodage initial*.
+
+En Scala, le traitement des égalités entre type est trop fragile et pose parfois des soucis 
+au compilateur. De ce fait, Scala ne possède pas de GADTs à proprement parlé, mais permet, 
+via l'héritage, de répondre à certaines problématiques que les GADTs solutionnent aussi.
+Cependant, *Dotty[fn:16]* (un compilateur expérimental pour le langage Scala, qui fait aussi 
+d'incubateur et qui a pour vocation de faire reposer Scala sur des bases plus formalisées) 
+semble intégrer de véritables GADTs... /wait and see/.
+
+* Conclusion
+
+Comme beaucoup /d'usages avancés du système de type/, il est parfois difficile de trouver 
+des cas d'usages où les GADTs sont essentiel, surtout si comme moi, vous débutez avec 
+les langages fonctionnels statiquement typés. J'espère tout de même que cet article 
+aura, pour certain, pu être une introduction abordable à leurs usages. Je remercie encore 
+sincèrement Nicolas Rinaudo et Gabriel Scherer pour leurs apports techniques sur la question 
+et tous les membres de la communauté *LilleFP* pour m'avoir forcé (voir oppressé) pour la 
+mise en place d'un /blog/ !
 
 [fn:1] https://twitter.com/clementd/status/915635752117129216
 [fn:2] http://ocaml.org
@@ -318,3 +404,5 @@ src_ocaml{option} que nous avons utilisé précédemment, en Scala :
 [fn:12] https://twitter.com/NicolasRinaudo
 [fn:13] http://gallium.inria.fr/~scherer/
 [fn:14] https://www.scala-lang.org/
+[fn:15] https://pchiusano.github.io/2014-05-20/scala-gadts.html
+[fn:16] http://dotty.epfl.ch/
