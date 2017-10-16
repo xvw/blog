@@ -1,0 +1,320 @@
+---
+title: Un cas d'école à l'utilisation des GADTs
+---
+
+#+BEGIN_QUOTE
+Cet article fait écho à un *tweet* [fn:1] et à une conversation que nous avons eu sur 
+le Slack de *LilleFP*. L'article propose de survoler un cas d'école de l'usage des 
+types algébriques généralisés (*GADTs*) avec le langage *OCaml[fn:2]* qui a l'avantage 
+d'avoir une syntaxe concise est relativement claire.
+
+
+L'objectif de l'article est avant tout de donner un exemple claire de l'utilisation des 
+/GADTs/, sans rentrer dans des considérations théoriques complexex (en plus je n'en ai 
+pas les compétences), et de fournir une définition /naïve/ de ce qu'ils sont, par rapport 
+à des types algébriques /classiques/. A la fin de l'article, on parlera un peu des 
+langages *orientés objets*, de leur manière de représenter des /types sommes/ et de 
+pourquoi il ne s'agit pas réellement de GADTs en donnant une définition un peu plus 
+fine que lors de la première partie de l'article.
+
+Une connaissance d'un langage de la famille *ML*  est préférable pour la lecture de 
+cet article.
+#+END_QUOTE
+
+
+Dans le monde des langages de programmation statiquement typés, on veille à toujours 
+tâcher de /typer/ correctement nos données pour que le compilateur puisse vérifier la
+cohérence d'un programme à la compilation, nous déchargeant ainsi d'un lourd travail 
+de vérification. Dans les langages de la famille ML, on a, à notre disposition, les 
+*types de données algébriques* (ADT[fn:3]), qui, couplé à la récursivité, permettent 
+d'exprimer, de manière assez élégante, des structures de données diverses.
+
+En OCaml, on possède deux formes d'/ADTs/ : 
+
+-  *les types produits* : les /n-uplets/ et les /enregistrements/ par exemple ;
+-  *les types sommes* : que l'on peut aussi appeler /types variants/ ou /unions discriminées/.
+
+Dans cet article, on va surtout s'intéresser aux types sommes. Cependant, n'hésitez pas,
+pour plus d'informations, à lire cet excellent tutoriel[fn:4] qui survole une grande 
+partie du langage OCaml.
+
+* Rappel sur les types sommes
+
+Les types sommes permettent d'unifier plusieurs types de données au sein d'un même type 
+au moyen de *constructeurs*. Par exemple : 
+
+#+BEGIN_SRC ocaml
+type color = 
+ | Red   
+ | Blue  
+ | Green 
+       
+let a_color = Red 
+let a_color_list = [Red; Green; Blue]
+#+END_SRC
+
+Dans cet exemple, la variable src_ocaml{red} aura le type src_ocaml{color} et la variable 
+src_ocaml{a_color_list} aura le type src_ocaml{color list}.
+
+Il est important de préciser que les constructeurs ne sont *pas* des sous-types, ce sont 
+des valeurs qui *appartiennent* au type src_ocaml{color}.
+
+** Notre propre type pour les listes
+
+Grâce aux types sommes, il est possible de construire facilement, au moyen de types 
+récursifs, des structures de données communes. Par exemple, une liste :
+
+#+BEGIN_SRC ocaml
+type 'a my_list = 
+  | Empty
+  | Cons of ('a * 'a my_list)
+
+let a_list = Cons (Red, Cons (Blue, Cons (Green, Empty)))
+#+END_SRC
+
+Ici, src_ocaml{a_list} aura le type src_ocaml{color my_list}. Les variants sont des outils 
+agréable à utiliser pour unir des valeurs (via des constructeurs) dans un même type. De 
+plus, ils s'utilisent très bien avec *la correspondance de motifs*. Par exemple, voyons 
+comment implémenter la fonction *iterate* pour notre nouveau type liste, dont le type 
+serait :
+
+src_ocaml{val iterate : ('a -> unit) -> 'a my_list -> unit}
+
+#+BEGIN_SRC ocaml
+let rec iterate f list = 
+  match list with 
+  | Empty -> ()          
+  | Cons (head, tail) -> 
+     let () = f head in 
+     iterate f tail           
+#+END_SRC
+
+
+** Implémentation de /head/ et /tail/
+
+Comme nous le montre notre type et notre fonction src_ocaml{iterate}, il est commun et 
+pratique de caractériser une liste par une *tête*  et une *queue*. Dans une valeur de 
+type src_ocaml{'a my_list}, la tête aura le type src_ocaml{'a} et la queue aura le 
+type src_ocaml{'a my_list}. Voyons tout de suite comment implémenter ces fonctions.
+
+*** Traiter le cas des listes vides
+
+L'implémentation de ces deux fonctions est simple, cependant, que doit-on faire quand 
+on essaye d'avoir la tête ou la queue pour *une liste vide* ? Une approche /classique/ 
+serait de faire comme beaucoup de langages font pour traiter un cas *exceptionnel*, en 
+lançant une exception : 
+
+#+BEGIN_SRC ocaml
+exception Empty_list of string
+
+let head list = 
+  match list with 
+  | Empty -> raise (Empty_list "head") 
+  | Cons (head, _) -> head                        
+
+let tail list = 
+  match list with 
+  | Empty -> raise (Empty_list "tail") 
+  | Cons (_, tail) -> tail
+
+#+END_SRC
+
+Cette approche fonctionne, et c'est d'ailleurs le choix qui a été fait pour la 
+bibliothèque standard de OCaml[fn:5]. D'autres langages, comme *Elm[fn:6]* ont fait 
+le choix de changer le type /habituel/ de src_ocaml{head} et src_ocaml{tail} pour 
+emballer le résultat de la fonction dans une *option*. De cette manière, le type des 
+deux fonctions indique directement qu'il faut traiter, /à la main/, le cas des listes 
+vides et comme Elm interdit une correspondance de motifs non-exhaustive, on est sur, 
+après la compilation, qu'on aura traité les cas où une liste est vide.
+
+#+BEGIN_SRC ocaml
+let head list = 
+  match list with 
+  | Empty -> None
+  | Cons (head, _) -> Some head                        
+
+let tail list = 
+  match list with 
+  | Empty -> None
+  | Cons (_, tail) -> Some tail
+
+#+END_SRC
+
+Pour peu que l'on possède suffisament d'outils pour manipuler les options, je préfère 
+largement cette approche à celle de lancer une exception. En effet, je trouve le code 
+plus facile à lire, à maintenir, et la signature de type des deux fonctions nous donne 
+directement une indication sur le fait qu'une fonction puisse "échouer", alors que 
+la signature de type ne donne aucune information sur le fait qu'une fonction lance une 
+exception (c'est le rôle de la documentation de nous informer de ce genre d'informations).
+
+Cependant, il serait intéressant de se demander s'il serait possible, à la compilation 
+et donc, au niveau du système de type, de définir que src_ocaml{head} et src_ocaml{tail} 
+ne peuvent prendre que des listes non-vides.
+
+** L'utilisation de types fantômes
+
+J'avais déjà, à l'époque où je travaillais chez *Dernier Cri*, rédigé un article[fn:7] 
+qui expliquait (de manière abordable, je l'espère), l'idée et l'intérêt des *types 
+fantômes*.
+
+Sans rentrer dans les détails, un type fantômes est un type que l'on va passer en paramètre
+d'un autre type, et dont le seul intérêt sera de donner des informations supplémentaires 
+que, dans le cas de la liste, le type des données contenues par la liste.
+
+#+BEGIN_SRC ocaml
+type ('a, 'b) t = 'b my_list
+#+END_SRC
+
+Dans cet exemple, src_ocaml{'b} sera le type des données de la liste, et on utilisera 
+src_ocaml{'a} pour définir si la liste est vide ou non.
+
+#+BEGIN_SRC ocaml
+type empty_t 
+type not_empty_t 
+
+type 'a my_list =
+ | Empty
+ | Cons of ('a * 'a my_list)
+
+type ('a, 'b) t = 'b my_list 
+
+let empty = Empty
+let cons x xs = Cons (x, xs)
+let head list =
+ match list with
+ | Cons (x, _) -> x
+ (* on ne devrait jamais être ici grâce aux types *)
+ | Empty -> assert false
+#+END_SRC
+
+L'implémentation générale ne diffère pas réellement de ce que nous avions fait 
+précédemment. les deux types src_ocaml{empty_t} et src_ocaml{not_empty_t} serviront
+uniquement à être le paramètre src_ocaml{'a} de notre type src_ocaml{('a, 'b) t}.
+C'est pour ça qu'ils n'ont pas de forme, la seule chose qui nous intéresse est leur 
+nom. Nous allons pouvoir implémenter l'interface de notre module: 
+
+
+#+BEGIN_SRC ocaml
+ type empty_t
+ type not_empty_t 
+ type ('a, 'b) t
+
+ val empty : (empty_t, 'a) t
+ val cons : 'b -> ('a, 'b) t -> (not_empty_t, 'b) t
+ val head : (not_empty_t, 'a) t -> 'a
+#+END_SRC
+
+Dans l'interface, nous n'allons pas exposer le types non nécéssaires, par exemple, 
+src_ocaml{my_list}, comme ça, on peut forcer l'utilisation de nos fonctions src_ocaml{cons}
+et src_ocaml{empty} qui retournent des types src_ocaml{t} bien typés.
+
+-  src_ocaml{empty} : retournera toujours une liste vide ;
+-  src_ocaml{cons} : retournera toujours une liste non-vide.
+
+Maintenant, il suffit de définir le type de la fonction src_ocaml{head} en spécifiant 
+qu'elle ne peut prendre *que* des listes non vides : src_ocaml{(not_empty_t, 'a) t -> 'a}.
+
+Avec un type de liste comme nous l'avons implémenté, il n'est pas possible d'implémenter 
+la fontion src_ocaml{tail}, car on ne pourrait pas savoir si la liste renvoyée est vide. 
+Pour palier à ce manque, il suffirait d'encoder la taille de la liste dans le type 
+fantôme. Pour cela, on peut se servir de *l'axiome de Peano[fn:8]*, qui rend l'implémentation
+de nombres positifs dans le système de type très aisé. 
+
+Cependant, ce n'est pas le sujet 
+de l'article, donc je vous propose d'expérimenter ceci par vous même.
+
+
+** Utilisations des GADTs
+
+Dans l'exemple proposé, on peut rapidement se rendre compte de quelques /faiblesses/ liées
+à l'usage de types fantômes :
+
+-  on est obligé de restreindre notre interface, pour controller les types des constructeurs ;
+-  ce qui indique que le type fantôme *dépend* du constructeur ;
+-  il faut tout de même gérer les cas du *match* (ici via src_ocaml{assert false}).
+
+C'est pour répondre à ces problématiques que OCaml[fn:9] intègre, depuis sa version 
+src_ocaml{4.00}, des *types algébriques généralisés*. En effet, les GADTs permettend de 
+séparer le type retourné par les constructeurs d'un autre type. Par exemple, avec notre 
+type src_ocaml{my_list} précédemment définit (que l'on va renommer src_ocaml{t} par soucis de 
+concision) : 
+
+#+BEGIN_SRC ocaml
+type ('a, 'b) t =
+  | Empty : (empty_t, 'b) t
+  | Cons : ('b * ('a, 'b) t) -> (not_empty_t, 'b) t
+#+END_SRC
+
+Avec ce type, OCaml inférera directement le bon type src_ocaml{'a} en fonction du constructeur 
+utilisé, par exemple : 
+
+#+BEGIN_SRC ocaml
+let x = Empty
+val x : (empty_t, 'a) t = Empty
+#+END_SRC
+
+Il devient donc très facile d'implémenter la fonction src_ocaml{head} : 
+
+#+BEGIN_SRC ocaml
+let head list = 
+  match list with 
+  | Cons (x, _) -> x
+ 
+(* ou de manière plus concise *) 
+let head (Cons (x, _)) = x                  
+#+END_SRC
+
+Globalement, les GADTs permettent de décrire une *relation* entre un *constructeur* de type et 
+un autre *type*. Ils amènent deux points utiles : 
+
+-  l'association d'un constructeur à un type spécifique ;
+-  la restriction des paramètres d'une fonction, comme vu pour la fonction src_ocaml{head}.
+
+Ils permettent de faire ce que l'on faisait avec des types fantômes, de manière moins verbeuses
+et imposent moins de /boilerplate/.
+
+Comme pour les types fantômes, leur usage peut éliminer des soucis de types ennuyeux et produire
+du code "plus sur" et pour lesquels on laisse au compilateur une grosse charge de vérifications. 
+On peut trouver beaucoup d'usages où leur utilisation améliore le code, par exemple, dans les 
+récentes modifications apportée à la bibliothèque *Lwt[fn:10]*.
+
+De plus, comme à la compilation, on /perd/ toute information de typage, leur utilisation 
+n'apporte aucun préjudice à la performance. Cependant, l'usage excessif de GADTs peut entrainer
+des erreurs de types (à la compilation) plus cryptiques.
+
+Dans la bibliothèque standard de OCaml, les GADTs ont étés utilisés, notamment, pour une 
+nouvelle implémentation des *Formats[fn:11]*.
+
+
+* Les types sommes dans les langages objets
+
+#+BEGIN_QUOTE
+Tout d'abord, je voudrais sincèrement remercier *Nicolas Rinaudo[fn:12]* et 
+*Gabriel Scherer[fn:13]* pour m'avoir aidé à l'a rédaction de cet article, en m'expliquant des 
+traits relatifs à *Scala[fn:13]* et pour m'avoir donné plus d'éléments théoriques sur ce que sont 
+réellement les GADTs, au delà de n'être qu'un /simple/ outil pour ajouter des types à des 
+constructeurs.
+#+END_QUOTE
+
+Dans un langage de programmation orienté objets, on peut faire une rapide analogie entre 
+les types sommes et les *classes unifiés par des liens d'héritage*. Implémentons le type 
+src_ocaml{option} que nous avons utilisé précédemment, en Scala :
+
+#+BEGIN_SRC scala
+
+#+END_SRC
+
+[fn:1] https://twitter.com/clementd/status/915635752117129216
+[fn:2] http://ocaml.org
+[fn:3] https://en.wikipedia.org/wiki/Algebraic_data_type
+[fn:4] http://form-ocaml.forge.ocamlcore.org/intro.html
+[fn:5] https://caml.inria.fr/pub/docs/manual-ocaml/libref/List.html
+[fn:6] http://package.elm-lang.org/packages/elm-lang/core/latest/List#head
+[fn:7] https://derniercri.io/tech-blog/phantom-types
+[fn:8] https://en.wikipedia.org/wiki/Peano_axioms
+[fn:9] https://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85
+[fn:10] https://discuss.ocaml.org/t/lwt-core-refactored/161/7
+[fn:11] https://ocaml.org/meetings/ocaml/2013/proposals/formats-as-gadts.pdf
+[fn:12] https://twitter.com/NicolasRinaudo
+[fn:13] http://gallium.inria.fr/~scherer/
+[fn:14] https://www.scala-lang.org/
