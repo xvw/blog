@@ -17,7 +17,7 @@ watch:
 
 push: blog-rebuild
 	git submodule update --remote --merge
-	rsync -avr --delete --exclude='.git'  _site/ deployement/
+	rsync -avr --delete --exclude-from '.publishignore'  _site/ deployement/
 	cd deployement \
 	  && git checkout master \
 	  && git add . \

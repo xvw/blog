@@ -1,16 +1,17 @@
 ---
 title: Un cas d'école à l'utilisation des GADTs
+date: 2017-10-16
 ---
 
 #+BEGIN_QUOTE
-Cet article fait écho à un *tweet* [fn:1] et à une conversation que nous avons eu sur 
+Cet article fait écho à un [[https://twitter.com/clementd/status/915635752117129216][tweet]] et à une conversation que nous avons eu sur 
 le Slack de *LilleFP*. L'article propose de survoler un cas d'école de l'usage des 
-types algébriques généralisés (*GADTs*) avec le langage *OCaml[fn:2]* qui a l'avantage 
-d'avoir une syntaxe concise est relativement claire.
+types algébriques généralisés (*GADTs*) avec le langage [[http://ocaml.org][OCaml]] qui a l'avantage 
+d'avoir une syntaxe concise et relativement claire.
 
 
-L'objectif de l'article est avant tout de donner un exemple claire de l'utilisation des 
-/GADTs/, sans rentrer dans des considérations théoriques complexex (en plus je n'en ai 
+L'objectif de l'article est avant tout de donner un exemple clair de l'utilisation des 
+/GADTs/, sans rentrer dans des considérations théoriques complexes (en plus je n'en ai 
 pas les compétences), et de fournir une définition /naïve/ de ce qu'ils sont, par rapport 
 à des types algébriques /classiques/. A la fin de l'article, on parlera un peu des 
 langages *orientés objets*, de leur manière de représenter des /types sommes/ et de 
@@ -22,20 +23,21 @@ cet article.
 #+END_QUOTE
 
 
-Dans le monde des langages de programmation statiquement typés, on veille à toujours 
-tâcher de /typer/ correctement nos données pour que le compilateur puisse vérifier la
+Dans le monde des langages de programmation statiquement typés, on tâche de toujours 
+/typer/ correctement nos données pour que le compilateur puisse vérifier la
 cohérence d'un programme à la compilation, nous déchargeant ainsi d'un lourd travail 
 de vérification. Dans les langages de la famille ML, on a, à notre disposition, les 
-*types de données algébriques* (ADT[fn:3]), qui, couplé à la récursivité, permettent 
-d'exprimer, de manière assez élégante, des structures de données diverses.
+*types de données algébriques* ([[https://en.wikipedia.org/wiki/Algebraic_data_type][ADT]]), permettent 
+d'exprimer, de manière assez élégante, des structures de données diverses (des arbres, 
+ou des listes par exemple).
 
 En OCaml, on possède deux formes d'/ADTs/ : 
 
--  *les types produits* : les /n-uplets/ et les /enregistrements/ par exemple ;
--  *les types sommes* : que l'on peut aussi appeler /types variants/ ou /unions discriminées/.
+-  *les types produits* : les /tuples/ et les /enregistrements/ par exemple ;
+-  *les types sommes* : que l'on peut aussi appeler /unions discriminées/.
 
 Dans cet article, on va surtout s'intéresser aux types sommes. Cependant, n'hésitez pas,
-pour plus d'informations, à lire cet excellent tutoriel[fn:4] qui survole une grande 
+pour plus d'informations, à lire cet excellent [[http://form-ocaml.forge.ocamlcore.org/intro.html][tutoriel]] qui survole une grande 
 partie du langage OCaml.
 
 * Rappel sur les types sommes
@@ -72,9 +74,9 @@ type 'a my_list =
 let a_list = Cons (Red, Cons (Blue, Cons (Green, Empty)))
 #+END_SRC
 
-Ici, src_ocaml{a_list} aura le type src_ocaml{color my_list}. Les variants sont des outils 
-agréable à utiliser pour unir des valeurs (via des constructeurs) dans un même type. De 
-plus, ils s'utilisent très bien avec *la correspondance de motifs*. Par exemple, voyons 
+Ici, src_ocaml{a_list} aura le type src_ocaml{color my_list}. Les *constructeurs*
+d'un type src_ocaml{t} construisent des termes de type src_ocaml{t}.
+De plus, ils s'utilisent très bien avec *la correspondance de motifs*. Par exemple, voyons 
 comment implémenter la fonction *iterate* pour notre nouveau type liste, dont le type 
 serait :
 
@@ -120,7 +122,7 @@ let tail list =
 #+END_SRC
 
 Cette approche fonctionne, et c'est d'ailleurs le choix qui a été fait pour la 
-bibliothèque standard de OCaml[fn:5]. D'autres langages, comme *Elm[fn:6]* ont fait 
+[[https://caml.inria.fr/pub/docs/manual-ocaml/libref/List.html][bibliothèque standard de OCaml]]. D'autres langages, comme [[http://package.elm-lang.org/packages/elm-lang/core/latest/List#head][Elm]] ont fait 
 le choix de changer le type /habituel/ de src_ocaml{head} et src_ocaml{tail} pour 
 emballer le résultat de la fonction dans une *option*. De cette manière, le type des 
 deux fonctions indique directement qu'il faut traiter, /à la main/, le cas des listes 
@@ -153,13 +155,13 @@ ne peuvent prendre que des listes non-vides.
 
 ** L'utilisation de types fantômes
 
-J'avais déjà, à l'époque où je travaillais chez *Dernier Cri*, rédigé un article[fn:7] 
+J'avais déjà, à l'époque où je travaillais chez *Dernier Cri*, rédigé un [[https://derniercri.io/tech-blog/phantom-types][article]]
 qui expliquait (de manière abordable, je l'espère), l'idée et l'intérêt des *types 
 fantômes*.
 
-Sans rentrer dans les détails, un type fantômes est un type que l'on va passer en paramètre
-d'un autre type, et dont le seul intérêt sera de donner des informations supplémentaires 
-que, dans le cas de la liste, le type des données contenues par la liste.
+Sans rentrer dans les détails, un type fantôme est un type que l'on va passer en paramètre
+d'un autre type, et dont le seul intérêt d'encoder des informations statiques sur le type
+dont il est le paramètre.
 
 #+BEGIN_SRC ocaml
 type ('a, 'b) t = 'b my_list
@@ -204,7 +206,7 @@ nom. Nous allons pouvoir implémenter l'interface de notre module:
  val head : (not_empty_t, 'a) t -> 'a
 #+END_SRC
 
-Dans l'interface, nous n'allons pas exposer le types non nécéssaires, par exemple, 
+Dans l'interface, nous n'allons pas exposer le types non nécéssaire, par exemple, 
 src_ocaml{my_list}, comme ça, on peut forcer l'utilisation de nos fonctions src_ocaml{cons}
 et src_ocaml{empty} qui retournent des types src_ocaml{t} bien typés.
 
@@ -217,8 +219,8 @@ qu'elle ne peut prendre *que* des listes non vides : src_ocaml{(not_empty_t, 'a)
 Avec un type de liste comme nous l'avons implémenté, il n'est pas possible d'implémenter 
 la fontion src_ocaml{tail}, car on ne pourrait pas savoir si la liste renvoyée est vide. 
 Pour palier à ce manque, il suffirait d'encoder la taille de la liste dans le type 
-fantôme. Pour cela, on peut se servir de *l'axiome de Peano[fn:8]*, qui rend l'implémentation
-de nombres positifs dans le système de type très aisé. 
+fantôme. Pour cela, on peut se servir de [[https://en.wikipedia.org/wiki/Peano_axioms][des entiers de Peano]], qui rend 
+l'implémentation de nombres positifs dans le système de type très aisé. 
 
 Cependant, ce n'est pas le sujet 
 de l'article, donc je vous propose d'expérimenter ceci par vous même.
@@ -233,8 +235,8 @@ Dans l'exemple proposé, on peut rapidement se rendre compte de quelques /faible
 -  ce qui indique que le type fantôme *dépend* du constructeur ;
 -  il faut tout de même gérer les cas du *match* (ici via src_ocaml{assert false}).
 
-C'est pour répondre à ces problématiques que OCaml[fn:9] intègre, depuis sa version 
-src_ocaml{4.00}, des *types algébriques généralisés*. En effet, les GADTs permettend de 
+C'est pour répondre à ces problématiques que [[https://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85][OCaml intègre]], depuis sa version 
+src_ocaml{4.00}, des *types algébriques généralisés*. En effet, les GADTs permettent de 
 séparer le type retourné par les constructeurs d'un autre type. Par exemple, avec notre 
 type src_ocaml{my_list} précédemment définit (que l'on va renommer src_ocaml{t} par soucis de 
 concision) : 
@@ -274,29 +276,30 @@ Ils permettent de faire ce que l'on faisait avec des types fantômes, de manièr
 et imposent moins de /boilerplate/.
 
 Comme pour les types fantômes, leur usage peut éliminer des soucis de types ennuyeux et produire
-du code "plus sur" et pour lesquels on laisse au compilateur une grosse charge de vérifications. 
+du code "plus sûr" et pour lesquels on laisse au compilateur une grosse charge de vérifications. 
 On peut trouver beaucoup d'usages où leur utilisation améliore le code, par exemple, dans les 
-récentes modifications apportée à la bibliothèque *Lwt[fn:10]*.
+récentes modifications apportée à la bibliothèque [[https://discuss.ocaml.org/t/lwt-core-refactored/161/7][Lwt]].
 
-De plus, comme à la compilation, on /perd/ toute information de typage, leur utilisation 
-n'apporte aucun préjudice à la performance. Cependant, l'usage excessif de GADTs peut entrainer
-des erreurs de types (à la compilation) plus cryptiques.
+De plus, en OCaml (et en Haskell)  comme à la compilation, on /perd/ toute information de typage, 
+leur utilisation  n'apporte aucun préjudice à la performance. 
+Cependant, l'usage excessif de GADTs peut entrainer des erreurs de types (à la compilation) 
+plus cryptiques.
 
 Dans la bibliothèque standard de OCaml, les GADTs ont étés utilisés, notamment, pour une 
-nouvelle implémentation des *Formats[fn:11]*.
+nouvelle implémentation des [[https://ocaml.org/meetings/ocaml/2013/proposals/formats-as-gadts.pdf][Formats]].
 
 
 * Les types sommes dans les langages objets
 
 #+BEGIN_QUOTE
-Tout d'abord, je voudrais sincèrement remercier *Nicolas Rinaudo[fn:12]* et 
-*Gabriel Scherer[fn:13]* pour m'avoir aidé dans l'a rédaction de cet article, 
-respectivement pour m'avoir expliqué des traits relatifs à *Scala[fn:14]* 
+Tout d'abord, je voudrais sincèrement remercier [[https://twitter.com/NicolasRinaudo][Nicolas Rinaudo]] et 
+[[http://gallium.inria.fr/~scherer/][Gabriel Scherer]] pour m'avoir aidé dans la rédaction de cet article, 
+respectivement pour m'avoir expliqué des traits relatifs à [[https://www.scala-lang.org/][Scala]]
 et pour m'avoir donné plus d'éléments théoriques sur ce que sont réellement les GADTs et 
-les travers liés à l'anaologie entre GADTs et héritage.
+les travers liés à l'analogie entre GADTs et héritage.
 #+END_QUOTE
 
-Dans un langage de programmation orienté objets, on peut faire une rapide analogie entre 
+Dans un langage de programmation orientée objets, on peut faire une rapide analogie entre 
 les types sommes et les *classes unifiés par des liens d'héritage*. Implémentons le type 
 src_ocaml{option} que nous avons utilisé précédemment, en Scala :
 
@@ -306,7 +309,7 @@ case object None extends Option[Nothing]
 case class  Some[A](value: A) extends Option[A]
 #+END_SRC
 
-Sans rentrer dans les détails de l'implémentation, on défini deux *cases*, un objet, qui n'aura
+Sans rentrer dans les détails de l'implémentation, on définit deux *cases*, un objet, qui n'aura
 qu'une seule valeur habitante possible (un /Singleton/), et une classe (qui elle pourra avoir 
 plus d'un habitant possible). 
 L'usage de case nous permet de supporter la correspondance de motifs et donc offrir à nos 
@@ -335,7 +338,7 @@ case class Cons[A](x: A, xs: MyList[A]) extends MyList[A]
 
 Comme pour la fonction src_scala{unwrap}, nous pourrions simplement l'écrire dans un objet 
 quelconque, cependant, comme nous sommes dans un langage orienté objet, considérons maintenant 
-que src_scala{head} est une méthode de notre classe src_scala{Some} :
+que src_scala{head} est une méthode de notre classe src_scala{Cons} :
 
 #+BEGIN_SRC scala
 sealed trait MyList[+A]
@@ -359,7 +362,7 @@ ne possède pas de GADTs. La manière d'encoder quelque chose qui s'apparente au
 sommes est l'application de caractéristiques communes aux classes liées par héritage et aux 
 types sommes. 
 
-Concernant les GADTs, Nicolas Rinaudo m'a transmis un article[fn:15] qui explique pourquoi, en jouant 
+Concernant les GADTs, Nicolas Rinaudo m'a transmis un [[https://pchiusano.github.io/2014-05-20/scala-gadts.html][article]] qui explique pourquoi, en jouant 
 uniquement sur l'héritage, on ne peut simuler qu'une /partie/ de l'usage des GADTs et il 
 propose une autre implémentation pour tâcher, au mieux, de profiter pleinement des GADTs. 
 
@@ -368,7 +371,7 @@ trouve facile à appréhender (et qu'il permet d'avoir un cheminement linéaire 
 aux GADTs en passant par les types fantômes), on ommet un autre point essentiel aux types 
 algébriques généralisés : *l'égalité entre types*. 
 
-L'article[fn:15] propose d'ajouter des 
+[[https://pchiusano.github.io/2014-05-20/scala-gadts.html][L'article]] propose d'ajouter des 
 preuves d'égalités pour typer finement les *consommateurs de données*. On appelle cette méthode 
 *l'encodage final*. Par opposition, les GADTs typent finement les données, on appelle ça un 
 *encodage initial*.
@@ -376,33 +379,15 @@ preuves d'égalités pour typer finement les *consommateurs de données*. On app
 En Scala, le traitement des égalités entre type est trop fragile et pose parfois des soucis 
 au compilateur. De ce fait, Scala ne possède pas de GADTs à proprement parlé, mais permet, 
 via l'héritage, de répondre à certaines problématiques que les GADTs solutionnent aussi.
-Cependant, *Dotty[fn:16]* (un compilateur expérimental pour le langage Scala, qui fait aussi 
-d'incubateur et qui a pour vocation de faire reposer Scala sur des bases plus formalisées) 
+Cependant, [[http://dotty.epfl.ch/][Dotty]] (un compilateur expérimental pour le langage Scala, qui fait aussi 
+office d'incubateur et qui a pour vocation de faire reposer Scala sur des bases plus formalisées) 
 semble intégrer de véritables GADTs... /wait and see/.
 
 * Conclusion
 
 Comme beaucoup /d'usages avancés du système de type/, il est parfois difficile de trouver 
-des cas d'usages où les GADTs sont essentiel, surtout si comme moi, vous débutez avec 
-les langages fonctionnels statiquement typés. J'espère tout de même que cet article 
+des cas d'usages où les GADTs sont essentiel. J'espère tout de même que cet article 
 aura, pour certain, pu être une introduction abordable à leurs usages. Je remercie encore 
 sincèrement Nicolas Rinaudo et Gabriel Scherer pour leurs apports techniques sur la question 
-et tous les membres de la communauté *LilleFP* pour m'avoir forcé (voir oppressé) pour la 
+et tous les membres de la communauté *LilleFP* pour m'avoir forcé (voire oppressé) pour la 
 mise en place d'un /blog/ !
-
-[fn:1] https://twitter.com/clementd/status/915635752117129216
-[fn:2] http://ocaml.org
-[fn:3] https://en.wikipedia.org/wiki/Algebraic_data_type
-[fn:4] http://form-ocaml.forge.ocamlcore.org/intro.html
-[fn:5] https://caml.inria.fr/pub/docs/manual-ocaml/libref/List.html
-[fn:6] http://package.elm-lang.org/packages/elm-lang/core/latest/List#head
-[fn:7] https://derniercri.io/tech-blog/phantom-types
-[fn:8] https://en.wikipedia.org/wiki/Peano_axioms
-[fn:9] https://caml.inria.fr/pub/docs/manual-ocaml-400/manual021.html#toc85
-[fn:10] https://discuss.ocaml.org/t/lwt-core-refactored/161/7
-[fn:11] https://ocaml.org/meetings/ocaml/2013/proposals/formats-as-gadts.pdf
-[fn:12] https://twitter.com/NicolasRinaudo
-[fn:13] http://gallium.inria.fr/~scherer/
-[fn:14] https://www.scala-lang.org/
-[fn:15] https://pchiusano.github.io/2014-05-20/scala-gadts.html
-[fn:16] http://dotty.epfl.ch/
