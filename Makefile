@@ -18,6 +18,8 @@ watch:
 push: blog-rebuild
 	git submodule update --remote --merge
 	rsync -avr --delete --exclude-from '.publishignore'  _site/ deployement/
+	cp CNAME deployement/CNAME
+	cp 404.html deployement/404.html
 	cd deployement \
 	  && git checkout master \
 	  && git add . \
