@@ -13,7 +13,7 @@ Les applications devenant de plus en plus complexes, principalement grâce à
 l'évolution des navigateurs web (qui est en un effet de bord à l'amélioration 
 de notre matériel), beaucoup de développeurs ont fait le choix d'utiliser 
 des *langages statiquement typés* pour faciliter le développement. On peut 
-citer, entre autres, [[https://www.typescriptlang.org/][TypeScript]], [[http://www.purescript.org/][Purescript]], [[https://reasonml.github.io/][ReasonML/OCaml]] (avec [[https://bucklescript.github.io/bucklescript/Manual.html][BuckleScript]]
+citer, entre autres, [[https://www.typescriptlang.org/][TypeScript]], [[http://www.purescript.org/][Purescript]], [[https://reasonml.github.io/][ReasonML]] / [[https://ocaml.org/][OCaml]] (avec [[https://bucklescript.github.io/bucklescript/Manual.html][BuckleScript]]
 ou [[http://ocsigen.org/js_of_ocaml/][Js\_of\_ocaml]]) et [[http://elm-lang.org/][Elm]]. Tous ces outils proposant chacun des avantages 
 (et aussi des inconvénients).
 
@@ -24,9 +24,12 @@ lorsque l'on doit écrire une application "riche" qui propose plusieurs formes
 d'interactivité, il faut parfois ruser, et remettre en question des pratiques 
 que l'on estimait bonne.
 
-Dans cet article, je vous propose d'utiliser *Elm* et *Elixir+Phoenix* (même si 
-nous nous intéresserons peu à la partie Elixir) pour construire une application 
-web moderne !
+Dans cet article, je vous propose, autour d'une application dont le /front-end/
+a été écrit en *Elm* et le /back-end/ est une application *Elixir+Phoenix*, 
+de survoler quelques retours d'expériences sur la conception d'une application 
+moderne avec Elm. Je n'expliquerai évidemment pas toutes les démarches pour 
+la construction de l'application, mais j'évoquerai quelques soucis auxquels 
+j'ai été confronté quand j'ai tenté de construire des applications /naïvement/.
 #+END_QUOTE
 
 Elm est un langage qui s'inscrit dans la famille des langages *ML*, et sa syntaxe
@@ -126,3 +129,90 @@ complémentaires, il n y a rien de plus que ce que j'ai montré.
 
 La génération de la vue est largement optimisée grâce à l'utilisation d'un 
 [[https://www.reddit.com/r/javascript/comments/2jav2q/is_there_any_good_standalone_implementation_of/cl9zrz1/?utm_content=permalink&utm_medium=front&utm_source=reddit&utm_name=javascript][DOM virtuel]], qui va minimiser les transformations nécéssaire pour rendre la vue.
+
+La Elm-architecture propose plusieurs types de programmes pour démarrer une application 
+dans le contexte idéal. Elle introduit aussi une notion de *signaux discrets*
+qui sont appelés des *souscriptions*. En résumé, elle /fit/ très bien avec 
+les attentes /fonctionnelles/ d'une application web moderne.
+
+*** En résumé
+
+La Elm-architecture est vraiment agréable à utiliser, elle n'est pas trop rigide et 
+permet donc d'organiser son code (via des *modules*) de manière assez libre.
+Cependant, l'écriture d'une application complète se réveler complexe pour plusieurs 
+raisons. En effet, même si l'architecture décrit un /flot/ assez évident (et donc, 
+compréhensible), la difficulté peut résider dans la *morphologie des messages et 
+des modèles*.
+
+Voyons, avant de nous ateler à la construction, ce que l'on pourrait attendre d'une 
+application web /moderne/ :
+
+- du /routing/ (côté client) ;
+- de l'interactivité ponctuelle (ouverture/fermeture de src_html{<div>} par exemple) ;
+- des messages discrets (venant de [[https://developer.mozilla.org/fr/docs/Utilisation_des_web_workers][Workers]], de [[https://developer.mozilla.org/fr/docs/Web/API/BroadcastChannel][Channels]] ou encore de [[https://developer.mozilla.org/fr/docs/WebSockets][Sockets]] par exemple).
+
+Le /routing/ introduit une notion d'*état bookmarkable*, l'interactivité ponctuelle amène 
+des éléments *d'ergonomie* qui améliorent la navigation et les messages discrets
+permettent de s'approcher des *applications temps réel*.
+
+** Forme des messages et des modèles
+
+#+BEGIN_QUOTE
+Il est important de préciser que cet article est avant tout un retour d'expérience, 
+il n'a pas du tout pour vocation à prétendre à une quelconque révolution. Lorsque 
+*j*'ai été amené à m'intéresser à Elm, les exemples "classiques" ont étés assez facile 
+à appréhender, cependant, quand j'ai été amené à structurer une application plus 
+ambitieuse, j'ai dû expérimenter plusieurs voies. Je ne prétend pas que c'est la seule 
+(ni même la meilleure) et je serai ravi de lire vos critiques en commentaire ou par 
+courrier éléctronique !
+#+END_QUOTE
+
+Avec l'architecture proposée, on n'est souvent tenté de faire ce qui, à mon sens, 
+est une *erreur monumental* s'il on veut que notre application puisse croître en 
+fonctionnalités. Avant d'entâmer les retours concrets sur l'implémentation d'une 
+application, j'aimerais mettre en lumière un point de vue que j'ai fait mûrir en 
+développant des applications de plus en plus ambitieuses avec Elm.
+
+1. Le modèle ne doit pas servir *que* à décrire le modèle de données (dans le sens 
+   qu'on lui donne dans le /back-end/), il décrit *l'état* courant de l'application.
+   De ce fait, dans une application /complexe/, on devrait souvent *privilégier* 
+   *l'usage d'unions discriminées* paramétrés qui n'exposent que les informations 
+   nécéssaires pour naviguer dans l'application plutôt que de tenter d'être 
+   exhaustif en exposant un enregistrement aplatit.
+
+2. les messages n'ont *pas tous le même niveau sémantique* dans une application, 
+   ils peuvent donc être regroupés et ordonnés au moyen, une fois de plus, 
+   *d'unions discriminées*.
+
+Rappelons le type de la fonction src_elm{update} qui va ponctuellement *générer des* 
+*fragments de la vue* : 
+
+#+BEGIN_SRC elm 
+update : Message -> Model -> Model
+#+END_SRC
+
+Cette signature indique que pour *un message* et un *modèle*, on produit le modèle 
+à l'état suivant. Donc, le *message reçu collabore avec le modèle courant* pour 
+produire le modèle suivant.
+
+Cette /petite mise en garde/ peut sembler, à bien des égards, très naïve, cependant, 
+je sais que pour ma part, ma première idée, quand j'ai été amené à développer mes 
+premières applications Elm, a été de vouloir, instinctivement considérer mon 
+modèle comme /un modèle de données/ (et donc tâcher au mieux de le rendre exhaustif)
+et mes messages comme /des actions atomiques/ ayant tous le même niveau sémantique. 
+Cette manière de procéder a eu comme conséquence que mon modèle était toujours 
+invariablement trop peuplé, la séparation de mes vues en fonctions plus complexe, 
+et ma fonction de rafraîchissement beaucoup trop longue et difficilement fragmentable.
+
+* GROMEL, une application de chat
+
+*Gromel* (un diminutif doûteux de /grommeler/) est une toute petite application 
+de chat, qui offre bien peu de fonctionnalités innovantes. Elle n'est pas du tout 
+destinée à vivre autrement que comme projet /Open Source/, ésseulée sur un 
+[[https://github.com/xvw/gromel][répertoire Github]]. Son seul objectif est de présenter un exemple d'application 
+respectant les /petits/ principes que j'ai évoqué dans la rubrique précédente.
+
+Vous pouvez tout de même la compiler localement, les instructions sont dans le 
+[[https://github.com/xvw/gromel/blob/master/README.md][README]], mais par pitié, soyez cléments envers l'apparence de l'application, je ne 
+suis hélas pas /designer/ !
+
