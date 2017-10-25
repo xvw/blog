@@ -24,12 +24,14 @@ lorsque l'on doit écrire une application "riche" qui propose plusieurs formes
 d'interactivité, il faut parfois ruser, et remettre en question des pratiques 
 que l'on estimait bonne.
 
-Dans cet article, je vous propose, autour d'une application dont le /front-end/
-a été écrit en *Elm* et le /back-end/ est une application *Elixir+Phoenix*, 
-de survoler quelques retours d'expériences sur la conception d'une application 
-moderne avec Elm. Je n'expliquerai évidemment pas toutes les démarches pour 
-la construction de l'application, mais j'évoquerai quelques soucis auxquels 
-j'ai été confronté quand j'ai tenté de construire des applications /naïvement/.
+Dans cet article, je vous propose, via des cas concrets, de mettre en place 
+une nouvelle architecture au sein de la Elm-architecture pour permettre, de 
+facilement faire croître une application Elm.
+
+Cet article n'est pas un tutoriel d'apprentissage au langage Elm, une connaissance 
+sommaire du langage est requise pour comprendre le code présenté. De plus, 
+les morceaux de code présentés n'utilisent pas [[https://github.com/avh4/elm-format][Elm-format]], non pas pour être 
+rebel, mais ça aurait pu rendre l'article plus difficilement lisible.
 #+END_QUOTE
 
 Elm est un langage qui s'inscrit dans la famille des langages *ML*, et sa syntaxe
@@ -54,13 +56,13 @@ un langage fonctionnel reactif, cependant, il tient beaucoup des promesses liés
 
 La Elm-architecture repose sur quelques pilliers : 
 
-1. On représente les données via un type src_elm{Model} ;
+1. On représente l'état de l'application via un type src_elm{Model} ;
 2. la représentation de la page est une fonction qui prend en paramètre un src_elm{Model} ;
 2. dans la fonction de vue, on peut envoyer des messages (de type src_elm{Message}) 
    à une fonction de rafraîchissement ;
 4. la fonction de rafraîchissement prend en argument un src_elm{Message} et un 
    src_elm{Model} et renvoie une nouvelle version du src_elm{Model} ;
-5. une application Elm est appelée un *programme* et initialize le modèle et définit la 
+5. une application Elm est appelée un *programme* et initialise le modèle et définit la 
    fonction de vue et celle de rafraîchissement.
 
 Dans ce premier exemple, nous allons simplement créer deux boutons et un texte qui affichera
@@ -85,11 +87,8 @@ type Msg
 
 update msg model =
   case msg of
-    Increment ->
-      model + 1
-
-    Decrement ->
-      model - 1
+    Increment -> model + 1
+    Decrement -> model - 1
 #+END_SRC
 
 Rien de très complexe, on se sert *d'unions discriminées* pour définir les différents 
@@ -144,8 +143,8 @@ raisons. En effet, même si l'architecture décrit un /flot/ assez évident (et 
 compréhensible), la difficulté peut résider dans la *morphologie des messages et 
 des modèles*.
 
-Voyons, avant de nous ateler à la construction, ce que l'on pourrait attendre d'une 
-application web /moderne/ :
+<<ingredients>>Voyons, avant de nous ateler à la construction, ce que l'on pourrait 
+attendre d'une application web /moderne/ :
 
 - du /routing/ (côté client) ;
 - de l'interactivité ponctuelle (ouverture/fermeture de src_html{<div>} par exemple) ;
@@ -198,21 +197,501 @@ produire le modèle suivant.
 Cette /petite mise en garde/ peut sembler, à bien des égards, très naïve, cependant, 
 je sais que pour ma part, ma première idée, quand j'ai été amené à développer mes 
 premières applications Elm, a été de vouloir, instinctivement considérer mon 
-modèle comme /un modèle de données/ (et donc tâcher au mieux de le rendre exhaustif)
+modèle comme /un modèle de données/ (et donc tâcher, au mieux, de le rendre exhaustif)
 et mes messages comme /des actions atomiques/ ayant tous le même niveau sémantique. 
 Cette manière de procéder a eu comme conséquence que mon modèle était toujours 
 invariablement trop peuplé, la séparation de mes vues en fonctions plus complexe, 
 et ma fonction de rafraîchissement beaucoup trop longue et difficilement fragmentable.
 
-* GROMEL, une application de chat
 
-*Gromel* (un diminutif doûteux de /grommeler/) est une toute petite application 
-de chat, qui offre bien peu de fonctionnalités innovantes. Elle n'est pas du tout 
-destinée à vivre autrement que comme projet /Open Source/, ésseulée sur un 
-[[https://github.com/xvw/gromel][répertoire Github]]. Son seul objectif est de présenter un exemple d'application 
-respectant les /petits/ principes que j'ai évoqué dans la rubrique précédente.
+* Construire une application
 
-Vous pouvez tout de même la compiler localement, les instructions sont dans le 
-[[https://github.com/xvw/gromel/blob/master/README.md][README]], mais par pitié, soyez cléments envers l'apparence de l'application, je ne 
-suis hélas pas /designer/ !
+Comme Elm ne propose pas d'outils de construction générique (comme 
+[[http://form-ocaml.forge.ocamlcore.org/modules/foncteurs.html][les foncteurs applicatifs de OCaml]] par exemple), l'architecture que je propose n'est 
+pas figé et devra *s'adapter aux besoins de l'application*. Cette partie de l'article 
+est donc à prendre comme une méthodologie et non comme une architecture figée, au 
+contraire de la Elm-architecture. 
+
+Je ne détaillerai pas tous les points techniques liés à Elm, par soucis de concision, 
+cependant, le code utilisé pour expérimenter cette infrastructure est accessible 
+[[https://github.com/xvw/gromel/tree/master/assets/elm/src][sur ce dépôt]] (qui fait office d'expérimentation, le code n'est pas un exemple sur 
+beaucoup d'aspect... désolé), il s'agit d'un projet [[https://elixir-lang.org/][Elixir]] / [[http://phoenixframework.org/][Phoenix]], 
+cependant la partie Elixir n'est pas très intéressante (et n'a été mise en place que 
+pour tester les /Websockets/).
+
+Attention, je n'ai pas du tout la prétention d'innover, cependant, les exemples liés 
+à l'utilisation de Elm-architecture couvrent généralement la partie SPA et j'ai la 
+conviction que le mélange des actions ponctuelle avec celle du /routing/ client peuvent 
+parfois entraîner des difficultés à modeliser les types de messages et de modèles 
+à utiliser.
+
+** Principe général de l'application
+
+L'application est vraiment /cheap/ (et laide), cependant, elle survole plusieurs cas 
+d'usages relatifs [[ingredients][aux ingrédients]] que nous avions établi comme étant les pré-requis à 
+l'implémentation d'une application web moderne, on retrouve donc plusieurs pages 
+qui utilisent différents concepts relatifs à ces ingrédients : 
+
+- des pages qui n'exposent aucune interactivité ;
+- des pages qui intègrent des élements interactifs ; 
+- la possibilité de publier des messages partagés entre les différents clients ; 
+- une notion d'erreur générale.
+
+*** Bibliothèques utilisées 
+
+Voici un rapide récapitulatif des outils utilisés dans l'implémentation de cette 
+expérience :
+
+- [[https://elixir-lang.org/][Elixir]] src_elixir{~> 1.4} ;
+- [[http://phoenixframework.org/][Phoenix]] src_elixir{~> 1.3.0} ;
+- [[http://elm-lang.org/][Elm]] src_elm{0.18}
+- [[http://package.elm-lang.org/packages/elm-lang/navigation/latest][elm-lang/navigation]] src_elm{2.1.0 <= v < 3.0.0} ;
+- [[http://package.elm-lang.org/packages/evancz/url-parser/latest/][evancz/url-parser]] src_elm{2.0.1 <= v < 3.0.0}.
+
+Comme cet article à été écrit à l'aube de la sortie de Elm src_elm{0.19}, il est 
+possible que dans un futur proche, certaines des propositions présentées dans 
+l'article deviennent obsolètes !
+
+** Implémentation des états /bookmarkables/
+
+Dans un premier temps, nous n'allons nous occuper que des *états /bookmarkables/*, 
+il s'agit de page /normales/ accessible via un point d'entrée, en l'occurence, 
+l'URL. 
+
+Premièrement, nous allons définir qu'un modèle est composé de valeurs *constantes*, 
+celles dont nous aurons besoin sur toutes les pages et de valeurs *variables*, soit 
+la description de la page sur laquelle nous nous trouvons. Concrètement, l'état 
+courant.
+
+#+BEGIN_SRC elm
+type alias Model =
+    { state : State
+    , messages : List String
+    , total : Int
+    }
+#+END_SRC
+
+src_elm{messages} correspondra à la liste de messages que l'on recevra (plus tard) 
+et src_elm{total} au nombre de messages postés que l'on aurait pas vu (provenant 
+d'autres clients). C'est dans src_elm{state} que l'on stockera la page courante.
+
+Un état pouvant être deux choses : 
+
+1. une page accessible ;
+2. une erreur, si par exemple la page n'existe pas.
+
+#+BEGIN_SRC elm
+type State
+    = Routed Page.Page -- Si une page existe
+    | Error Int String -- Si on doit remonter une erreur
+#+END_SRC
+
+Le type src_elm{Page.Page} est une union disciminée qui énumère toutes les pages 
+statiques de l'application web : 
+
+#+BEGIN_SRC elm
+type Page
+    = Home
+    | About Bool
+    | Post { input : String }
+#+END_SRC
+
+L'avantage d'utiliser une union disciminée est qu'il ne faut pas normaliser le 
+modèle de données d'une page. De ce fait, chaque page peut avoir son modèle 
+spécialisé, ne contenant que les informations nécéssaires à son affichage. Les 
+données communes à toutes les pages seront, elles, stockées dans le modèle, au 
+même niveau que l'état courant.
+
+Avec cette approche on peut déjà implémenter un mécanisme de vue via des fonctions :
+
+#+BEGIN_SRC elm 
+-- Vue globale de l'application
+global : Model -> Html Message
+global model =
+    let 
+       content = case model.state of 
+           Error code message -> [ error code message ]
+           Routed content -> page model content
+    in
+      div [ Attributes.class "content" ]
+          [ h1 []
+              [ text "My page" ]
+          , nav [] [{- Ici on mettra le menu -}]
+          , div [] content
+          ]
+
+-- Vue d'une erreur
+error : Int -> String -> Html message
+error code message =
+    div [ Attributes.class "error" ]
+        [ h2 [] [ text (toString code) ]
+        , text message
+        ]
+#+END_SRC
+
+Et on peut implémenter la fonction src_elm{page} qui affichera, au cas par cas 
+les informations nécéssaires à l'affichage de la page : 
+
+<<renderpage>>
+#+BEGIN_SRC elm 
+page : Model -> Page -> List (Html Message)
+page model page =
+  case page of 
+    Home -> 
+       {- Code ou fonction pour afficher la page Home -}
+    About toggle -> 
+       {- Pareil pour About -}
+    {- etc ... -}
+#+END_SRC
+
+Le module qui s'occupe de rendre le HTML peut se contenter de n'exposer que 
+la fonction src_elm{global} car c'est au final la seule qui, en dehor du module,
+sera réellement utile.
+
+*** Implémentation du /router/
+
+Maintenant que nous avons des éléments pour construire des pages ayant chacun 
+leur modèle spécifique, nous allons pouvoir implémenter le /routing/ à 
+proprement parlé. 
+
+Pour cela, nous allons, un peu à la manière de src_elm{Page}, implémenter une 
+union disciminée pour définir les routes. Comme une URL peut ne pas aboutir à 
+une route existante, la notion de route potentiellement aboutissable peut être 
+modelisée par un src_elm{Maybe Route}. L'implémentation du module de /routing/
+est une tâche assez récurrente, et ne fais rien de plus qu'exploiter les modules 
+[[http://package.elm-lang.org/packages/elm-lang/navigation/latest][elm-lang/navigation]] et [[http://package.elm-lang.org/packages/evancz/url-parser/latest/][evancz/url-parser]]. On ajoute des fonctions utilitaires 
+pour transformer une src_elm{Navigation.Location} en src_elm{Route} et de quoi 
+générer rapidement les attributs HTML *href* pour pointer vers une route :
+
+On défini d'abord les différentes routes possibles et ensuite le /parseur/ 
+qui servira à transformer une src_elm{Navigation.Location} en src_elm{Route} :
+#+BEGIN_SRC elm 
+type Route
+    = Home
+    | About
+    | Post
+
+
+routeParser : Parser (Route -> a) a
+routeParser =
+    Url.oneOf
+        [ map Home (s "")
+        , map About (s "about")
+        , map Post (s "publish-message")
+        ]
+
+#+END_SRC
+
+Ensuite on peut créer une fonction pour transformer une src_elm{Route} en chaine 
+de caractères qui sera utilisé dans la fonction pour générer l'attribut *href*. 
+Si j'utilise src_elm{String.join} c'est pour anticiper le moment où j'aurai des 
+URL's avec plusieurs membres (séparés par des src_elm{/}) :
+
+#+BEGIN_SRC elm 
+toString : Route -> String
+toString route =
+    let
+        fragment =
+            case route of
+                Home -> [ "" ]
+                About -> [ "about" ]
+                Post -> [ "publish-message" ]
+    in  "#/" ++ (String.join "/" fragment)
+
+href : Route -> Attribute messsage
+href route =
+    Attributes.href (toString route)
+#+END_SRC
+
+On peut ensuite implémenter la fonction qui tâchera de produire notre route sur 
+base de l'objet src_elm{Navigation.Location} :
+
+#+BEGIN_SRC elm 
+fromLocation : Location -> Maybe Route
+fromLocation location =
+    if String.isEmpty (location.hash) then
+        Just Home
+    else
+        parseHash routeParser location
+#+END_SRC
+
+Même si le code est un peu récurrent, on défini les routes accessibles au moyen 
+d'un *Parseur* dont on se servira pour /parser/ la /location/ courante.
+
+En utilisant un [[http://package.elm-lang.org/packages/elm-lang/navigation/2.1.0/Navigation#program][programme issu du module Navigation]] on pourra créer un écouteur 
+qui a chaque changement dans l'URL, enverra un message contenant la route 
+potentielle (via la fonction src_elm{fromLocation}). On peut donc créer un 
+premier message : 
+
+#+BEGIN_SRC elm 
+type Message
+    = Routing (Maybe Route) 
+#+END_SRC
+
+Maintenant que le changement d'URL /broadcast/ un message, il faut le traiter 
+dans la *fonction de rafraîchissement*.
+
+J'ai décidé de créer une fonction dont le type est 
+src_elm{Model -> Maybe Route -> Model} qui se chargera de construire le modèle 
+adéquat pour une route donnée. De cette manière, je peux réutiliser cette fonction 
+dans la phase *d'initialisation* de l'application : 
+
+
+#+BEGIN_SRC elm 
+doRouting : Model -> Maybe Route -> Model
+doRouting model potentialRoute =
+    case potentialRoute of
+        Nothing ->
+            { model | state = 
+                Error 404 "The route does not exists" 
+            }
+        Just route ->
+            case route of
+                Home ->  
+                  { model | state = Routed Page.Home }
+                About -> 
+                  { model | state = Routed (Page.About False) }
+                Post ->  
+                  { model 
+                     | total = 0
+                     , state = 
+                          Routed (Page.Post { input = "" }) 
+                  }
+#+END_SRC
+
+Globalement, je me contente de lancer une erreur si jamais la route n'existe pas et 
+je me contente chaque fois de modifier le membre src_elm{state} de mon modèle (sauf 
+dans le cas de src_elm{Post}, mais nous reviendrons sur ce point plus tard).
+
+Je peux maintenant modifier le membre src_elm{init} de mon programme pour qu'il charge, 
+au démarrage de l'application, la route adéquate, et donc qu'il génère le modèle 
+que l'on attend :
+
+#+BEGIN_SRC elm 
+init : Navigation.Location -> ( Model, Cmd Message )
+init location =
+    let
+        route = fromLocation location
+        model = { 
+           messages = []
+         , state = Routed Page.Home
+         , total = 0 
+        }
+    in ( doRouting model route, Cmd.none )
+#+END_SRC
+
+Ensuite, il suffit de s'occuper de la fontion de rafraîchissement, dont le travail 
+sera simplement d'utiliser la fonction src_elm{doRouting}, comme dans la fonction 
+src_elm{init} : 
+
+#+BEGIN_SRC elm 
+update : Message -> Model -> ( Model, Cmd Message )
+update message model =
+    case message of
+        Routing potentialRoute ->
+            (doRouting model potentialRoute, Cmd.none)
+#+END_SRC
+
+*** Utilisation du /router/
+
+Nous avons maintenants des *états bookmarkables*, même si on pourra se plaindre de 
+la redondance des définitions (notamment entre src_elm{Page} et src_elm{Route}) et 
+du fait qu'il faille modifier la fonction src_elm{doRouting} et les vues pour 
+ajouter des nouvelles pages, le compilateur nous aide en nous soulignant les 
+cas de correspondance de motifs non-exhaustive (c'est en partie pour ça qu'il vaut 
+mieux, dans la mesure du possible, *éviter les captures générales* via src_elm{_ ->}. 
+Cependant, parfois, il est compliqué de s'en passer.
+
+Nous pouvons rapidement ajouter un menu dans notre vue globale, c'est très facile 
+à mettre en place grâce à la fonction src_elm{Router.href} :
+
+#+BEGIN_SRC elm 
+global : Model -> Html Message
+global model =
+    let 
+       content = case model.state of 
+           Error code message -> [ error code message ]
+           Routed content -> page model content
+    in
+      div [ Attributes.class "content" ]
+          [ h1 []
+              [ text "My Page" ]
+          , nav []
+              [ a [ Router.href Router.Home ] [ text "Home" ]
+              , a [ Router.href Router.About ] [ text "About" ]
+              , a [ Router.href Router.Post ]
+                  [ text 
+                     -- Ici on affiche le nombre 
+                     -- de messages reçus depuis
+                     -- la dernière visite
+                     ( "Post a  message (" 
+                       ++ (toString model.total) 
+                       ++ ")") 
+                   ]
+              ]
+          , div [] (fragment model)
+          ]
+#+END_SRC
+
+Ce que l'on retiendra principalement de l'implémentation des états /bookmarkables/
+pour le développement de notre application est :
+
+-  on joint chacune des pages possibles via un type qui énumère les pages possibles 
+   permettant de spécialiser le modèle de chaque page ;
+
+- l' ajout de pages imposent (hélas) un réplicat entre les routes exposées et
+  l'énumération des pages ;
+
+- la notion d'état /bookmarkable/ est offerte par la fonction src_elm{init} qui 
+  démarre la session de navigation dans l'application en fonction de la route courante.
+
+** Implémentation des actions ponctuelles
+
+En plus de pouvoir "formellement" changer d'URL, on voudrait pouvoir effectuer 
+des actions *ponctuelles*, qui elles, seraient des *états /non-bookmarkables/*. Cela 
+permettrait, entre autre, de faire des modifications relatives à une page que l'on 
+est en train de visiter, par exemple "ouvrir" ou "fermer" une src_elm{<div>} ou 
+modifier l'état général (le modèle) de l'application.
+
+Prenons par exemple la page src_elm{About} qui est paramétrée par un booléen, 
+imaginons que nous voudrions qu'en fonction de la valeur de ce paramètre, un 
+fragment de HTML soit affiché ou nous à l'écran. 
+
+Voyons une fonction que nous aurions pu appeler dans notre [[renderpage][fonction]] pour rendre 
+les vues des pages :
+
+#+BEGIN_SRC elm
+about : Bool -> List (Html Message)
+about toggle =
+    let
+        toggler =
+            if toggle then "opened"
+            else "closed"
+    in
+        [ button [] [ text "Toggle content" ] -- THE button ;)
+        , div [ Attributes.class "page" ]
+            [ h2 [] [ text "About" ]
+            , text "This is an "
+            , span [ Attributes.class toggler ] [ text "ugly" ]
+            , text " experience !"
+            ]
+        ]
+#+END_SRC
+
+Actuellement, grâce à l'organisation de notre code, l'utilisation du booléen 
+est déjà prise en charge, cependant, il faut implémenter un message pour demander
+**explicitement** de changer la valeur du booléen.
+
+*** Les patches
+
+Concrètement, ce que l'on veut faire ici, c'est simplement *modifier un modèle*, 
+un *patch* n'est donc rien de plus qu'une fonction qui prend en argument un 
+modèle et renvoie la version modifiée de ce modèle. On peut donc étendre 
+nos messages pour prendre en charge les patches : 
+
+#+BEGIN_SRC elm
+type Message
+    = Routing (Maybe Route)
+    | Patch (Model -> ( Model, Cmd Message ))
+#+END_SRC
+
+L'ajout d'un nouveau message implique la transformation de la fonction de 
+rafraîchissement. Lorsque l'on reçoit un message src_elm{Patch f}, il suffit 
+d'appliquer la fonction au modèle courant (car on *délègue* au /patch/ la 
+responsabilité de savoir s'il peut s'appliquer au modèle en cours ou non) :
+
+#+BEGIN_SRC elm
+update : Message -> Model -> ( Model, Cmd Message )
+update message model =
+    case message of
+        Routing potentialRoute ->
+            (doRouting model potentialRoute, Cmd.none)
+        Patch apply_patch ->
+            apply_patch model
+#+END_SRC
+
+Pour reprendre notre exemple précédent, voici une implémentation possible 
+pour changer le modèle de notre page src_elm{About} : 
+
+#+BEGIN_SRC elm
+toggleAbout : Model -> ( Model, Cmd message )
+toggleAbout model =
+   let 
+       state = case model.state of 
+          Routed (Page.About t) -> Routed (Page.About (not t))
+          _ -> Error 401 "Unauthorized case"
+    in ({ model | state = state}, Cmd.none)
+#+END_SRC
+
+Une fois que la fonction de /patch/ est créée, on peut s'en servir assez 
+facilement dans la *vue* : 
+
+#+BEGIN_SRC elm
+button [onClick (Patch toggleAbout)] [ text "Toggle content" ]
+#+END_SRC
+
+Si je ne /wrappe/ pas directement le résultat de ma fonction dans le constructeur 
+src_elm{Patch}, c'est en partie pour pouvoir m'en reservir dans d'autres contextes
+que les patches. Cependant, je n'ai pas réellement d'avis sur ce qu'il serait 
+mieux de faire, donc je tâche de prôner la réutilisabilité.
+
+Le seul problème "cosmétique" à cette méthode est qu'elle est oblige à traiter 
+un cas *trivial* et donc, par soucis de confort, à faire une clause universelle, 
+donc, potentiellement, occulter certaines erreurs. Même si cette approche ne 
+me satisfait pas totalement, je pense qu'en considérant qu'un /patch/ ne concerne 
+à priori qu'une seule page, ce n'est pas dramatique.
+
+En opposition, le fait de pouvoir traiter "plusieurs cas" de modèle dans un /patch/
+peut aussi être intéressant dans certains cas de figures.
+
+Actuellement, je pense que le fait que Elm *occulte certains aspects liés à* 
+*l'algèbre des types* implique qu'il n'existe (pour peu que l'on respecte ce 
+type d'architecture) pas de solutions satisfaisante. 
+Cependant, si vous avez des idées ou pistes, n'hésitez pas à laisser un commentaire 
+ou à m'écrire un courrier électronique !
+
+
+*** Des patches plus complexes
+
+On se rend vite compte que les patches fonctionnent très bien avec des émetteurs 
+d'événements comme src_elm{onClick}, mais pourrait-on les utiliser avec, par 
+exemple, l'émetteur src_elm{onInput} ([[https://guide.elm-lang.org/architecture/user_input/forms.html][préconisé]] pour le traitement de données 
+liés à des champs de textes) ? Observons le modèle de la page src_elm{Post} :
+
+#+BEGIN_SRC elm
+type Page
+    = Home
+    | About Bool
+    | Post { input : String }
+#+END_SRC
+
+Le type de src_elm{onInput} est : src_elm{(String -> msg) -> Attribute msg}, 
+pour cela, nous allons passer à la fonction src_elm{onInput} une fonction 
+dont l'argument unique sera la chaine de caractères demandée par l'événement, 
+dans notre fonction anonyme, nous pourrons passer cette chaine à notre patch :
+
+#+BEGIN_SRC elm
+  [ input
+     [ Attr.placeholder "A message"
+       , Attr.value state.input
+       , onInput (\s -> Patch (recordInput s))
+     ] []
+#+END_SRC
+
+Voyons, par exemple, comment sauvegarder dans le modèle de la page src_elm{Post}
+le contenu du champ de texte :
+
+#+BEGIN_SRC elm
+recordInput : String -> Model -> ( Model, Cmd message )
+recordInput text model  =
+   let 
+       state = case model.state of 
+          Routed (Page.Step state) ->
+              { model
+                | state = 
+                   Routed (Page.Step {state | input = text})    
+              }
+          _ -> Error 401 "Unauthorized case"
+    in ({ model | state = state}, Cmd.none)
+#+END_SRC
 
