@@ -31,14 +31,14 @@ facilement faire croître une application Elm.
 Cet article n'est pas un tutoriel d'apprentissage au langage Elm, une connaissance 
 sommaire du langage est requise pour comprendre le code présenté. De plus, 
 les morceaux de code présentés n'utilisent pas [[https://github.com/avh4/elm-format][Elm-format]], non pas pour être 
-rebel, mais ça aurait pu rendre l'article plus difficilement lisible.
+rebelle, mais ça aurait pu rendre l'article plus difficilement lisible.
 #+END_QUOTE
 
 Elm est un langage qui s'inscrit dans la famille des langages *ML*, et sa syntaxe
 s'inspire fortement de [[https://haskell.org][Haskell]]. On écrit une application "entière" en Elm et 
 ensuite, elle est *transpilée* en JavaScript. En plus d'offrir une syntaxe 
-confortable (et oui, inspirée de Haskell), Elm offre un système de types puissant 
-et expressif, qui évite au maxium les erreurs à _Runtime_. De plus, le compilateur 
+confortable (et, oui, inspirée de Haskell), Elm offre un système de types puissant 
+et expressif, qui évite au maxium les erreurs au _Runtime_. De plus, le compilateur 
 de Elm est très bavard et éloquent sur les manières de résoudre une erreur à la 
 compilation.
 
@@ -62,7 +62,7 @@ La Elm-architecture repose sur quelques pilliers :
    à une fonction de rafraîchissement ;
 4. la fonction de rafraîchissement prend en argument un src_elm{Message} et un 
    src_elm{Model} et renvoie une nouvelle version du src_elm{Model} ;
-5. une application Elm est appelée un *programme* et initialise le modèle et définit la 
+5. une application Elm est appelée un *programme* et initialise le src_elm{Model} et définit la 
    fonction de vue et celle de rafraîchissement.
 
 Dans ce premier exemple, nous allons simplement créer deux boutons et un texte qui affichera
@@ -81,6 +81,8 @@ Comme notre modèle est assez simple, la fonction de rafraîchissement est assez
 implémenter.
 
 #+BEGIN_SRC elm
+alias Model = Int
+
 type Msg 
  = Increment 
  | Decrement
@@ -157,18 +159,18 @@ permettent de s'approcher des *applications temps réel*.
 ** Forme des messages et des modèles
 
 #+BEGIN_QUOTE
-Il est important de préciser que cet article est avant tout un retour d'expérience, 
+Il est important de préciser que cet article est avant tout un retour d'expérience; 
 il n'a pas du tout pour vocation à prétendre à une quelconque révolution. Lorsque 
-*j*'ai été amené à m'intéresser à Elm, les exemples "classiques" ont étés assez facile 
-à appréhender, cependant, quand j'ai été amené à structurer une application plus 
+*j*'ai été amené à m'intéresser à Elm, les exemples "classiques" ont été assez faciles 
+à appréhender. Cependant, quand j'ai été amené à structurer une application plus 
 ambitieuse, j'ai dû expérimenter plusieurs voies. Je ne prétend pas que c'est la seule 
 (ni même la meilleure) et je serai ravi de lire vos critiques en commentaire ou par 
 courrier éléctronique !
 #+END_QUOTE
 
 Avec l'architecture proposée, on est souvent tenté de faire ce qui, à mon sens, 
-est une *erreur monumentale* s'il on veut que notre application puisse croître en 
-fonctionnalités. Avant d'entâmer les retours concrets sur l'implémentation d'une 
+est une *erreur monumentale* si l'on veut que notre application puisse croître en 
+fonctionnalités. Avant d'entamer les retours concrets sur l'implémentation d'une 
 application, j'aimerais mettre en lumière un point de vue que j'ai fait mûrir en 
 développant des applications de plus en plus ambitieuses avec Elm.
 
@@ -194,11 +196,11 @@ Cette signature indique que pour *un message* et un *modèle*, on produit le mod
 à l'état suivant. Donc, le *message reçu collabore avec le modèle courant* pour 
 produire le modèle suivant.
 
-Cette /petite mise en garde/ peut sembler, à bien des égards, très naïve, cependant, 
+Cette /petite mise en garde/ peut sembler, à bien des égards, très naïve. Cependant, 
 je sais que pour ma part, ma première idée, quand j'ai été amené à développer mes 
-premières applications Elm, a été de vouloir, instinctivement considérer mon 
+premières applications Elm, a été de vouloir, instinctivement, considérer mon 
 modèle comme /un modèle de données/ (et donc tâcher, au mieux, de le rendre exhaustif)
-et mes messages comme /des actions atomiques/ ayant tous le même niveau sémantique. 
+et mes messages comme /des actions atomiques/ ayant toutes le même niveau sémantique. 
 Cette manière de procéder a eu comme conséquence que mon modèle était toujours 
 invariablement trop peuplé, la séparation de mes vues en fonctions plus complexe, 
 et ma fonction de rafraîchissement beaucoup trop longue et difficilement fragmentable.
@@ -215,11 +217,11 @@ contraire de la Elm-architecture.
 Je ne détaillerai pas tous les points techniques liés à Elm, par soucis de concision, 
 cependant, le code utilisé pour expérimenter cette infrastructure est accessible 
 [[https://github.com/xvw/gromel/tree/master/assets/elm/src][sur ce dépôt]] (qui fait office d'expérimentation, le code n'est pas un exemple sur 
-beaucoup d'aspect... désolé), il s'agit d'un projet [[https://elixir-lang.org/][Elixir]] / [[http://phoenixframework.org/][Phoenix]], 
-cependant la partie Elixir n'est pas très intéressante (et n'a été mise en place que 
+beaucoup d'aspects... désolé), il s'agit d'un projet [[https://elixir-lang.org/][Elixir]] / [[http://phoenixframework.org/][Phoenix]]. 
+Cependant la partie Elixir n'est pas très intéressante (et n'a été mise en place que 
 pour tester les /Websockets/).
 
-Attention, je n'ai pas du tout la prétention d'innover, cependant, les exemples liés 
+Attention, je n'ai pas du tout la prétention d'innover; cependant, les exemples liés 
 à l'utilisation de Elm-architecture couvrent généralement la partie SPA et j'ai la 
 conviction que le mélange des actions ponctuelle avec celle du /routing/ client peuvent 
 parfois entraîner des difficultés à modeliser les types de messages et de modèles 
@@ -272,10 +274,10 @@ type alias Model =
 #+END_SRC
 
 src_elm{messages} correspondra à la liste de messages que l'on recevra (plus tard) 
-et src_elm{total} au nombre de messages postés que l'on aurait pas vu (provenant 
+et src_elm{total} au nombre de messages postés que l'on n'aurait pas vu (provenant 
 d'autres clients). C'est dans src_elm{state} que l'on stockera la page courante.
 
-Un état pouvant être deux choses : 
+Un état peut être deux choses : 
 
 1. une page accessible ;
 2. une erreur, si par exemple la page n'existe pas.
@@ -329,7 +331,7 @@ error code message =
         ]
 #+END_SRC
 
-Et on peut implémenter la fonction src_elm{page} qui affichera, au cas par cas 
+Et on peut implémenter la fonction src_elm{page} qui affichera, au cas par cas, 
 les informations nécéssaires à l'affichage de la page : 
 
 <<renderpage>>
@@ -345,7 +347,7 @@ page model page =
 #+END_SRC
 
 Le module qui s'occupe de rendre le HTML peut se contenter de n'exposer que 
-la fonction src_elm{global} car c'est au final la seule qui, en dehor du module,
+la fonction src_elm{global} car c'est au final la seule qui, en-dehors du module,
 sera réellement utile.
 
 *** Implémentation du /router/
@@ -382,10 +384,10 @@ routeParser =
 
 #+END_SRC
 
-Ensuite on peut créer une fonction pour transformer une src_elm{Route} en chaine 
+Ensuite, on peut créer une fonction pour transformer une src_elm{Route} en chaîne 
 de caractères qui sera utilisé dans la fonction pour générer l'attribut *href*. 
 Si j'utilise src_elm{String.join} c'est pour anticiper le moment où j'aurai des 
-URL's avec plusieurs membres (séparés par des src_elm{/}) :
+URLs avec plusieurs membres (séparés par des src_elm{/}) :
 
 #+BEGIN_SRC elm 
 toString : Route -> String
@@ -556,7 +558,7 @@ modifier l'état général (le modèle) de l'application.
 
 Prenons par exemple la page src_elm{About} qui est paramétrée par un booléen, 
 imaginons que nous voudrions qu'en fonction de la valeur de ce paramètre, un 
-fragment de HTML soit affiché ou nous à l'écran. 
+fragment de HTML soit affiché ou non à l'écran. 
 
 Voyons une fonction que nous aurions pu appeler dans notre [[renderpage][fonction]] pour rendre 
 les vues des pages :
@@ -648,7 +650,7 @@ peut aussi être intéressant dans certains cas de figures.
 
 Actuellement, je pense que le fait que Elm *occulte certains aspects liés à* 
 *l'algèbre des types* implique qu'il n'existe (pour peu que l'on respecte ce 
-type d'architecture) pas de solutions satisfaisante. 
+type d'architecture) pas de solution satisfaisante. 
 Cependant, si vous avez des idées ou pistes, n'hésitez pas à laisser un commentaire 
 ou à m'écrire un courrier électronique !
 
@@ -811,7 +813,7 @@ encore des /BroadcastChannels/).
 
 * Conclusion
 
-Dans cet article, nous avons couvert certains éléments d'interactions utils pour la 
+Dans cet article, nous avons couvert certains éléments d'interactions utiles pour la 
 conception d'une application web moderne. Comme je l'ai répété à de multiple reprises
 tout au long de l'article, je ne propose pas une architecture inclue dans la 
 Elm-architecture et le code présenté ici n'est, hélas, pas générique.
@@ -850,7 +852,7 @@ me semblent pertinentes. Et je résumerai l'ensemble de cet article par quelques
 - profitez au maximum de la Elm-architecture (par exemple pour les souscriptions).
 
 Pour finir, Elm c'est vraiment cool et facile à appréhender (pour preuve, la partie 
-la plus dur a été, selon moi, la mise en place de [[https://webpack.github.io/][Webpack]]) !
+la plus dure a été, selon moi, la mise en place de [[https://webpack.github.io/][Webpack]]) !
 
 
 [fn:1] Attention, ce n'est évidemment pas une critique, mais une constatation 
