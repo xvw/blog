@@ -37,8 +37,8 @@ rebelle, mais ça aurait pu rendre l'article plus difficilement lisible.
 Elm est un langage qui s'inscrit dans la famille des langages *ML*, et sa syntaxe
 s'inspire fortement de [[https://haskell.org][Haskell]]. On écrit une application "entière" en Elm et 
 ensuite, elle est *transpilée* en JavaScript. En plus d'offrir une syntaxe 
-confortable (et, oui, inspirée de Haskell), Elm offre un système de types puissant 
-et expressif, qui évite au maxium les erreurs au _Runtime_. De plus, le compilateur 
+confortable, Elm offre un système de types puissant et expressif (par rapport à JavaScript), 
+qui évite au maxium les erreurs au _Runtime_. De plus, le compilateur 
 de Elm est très bavard et éloquent sur les manières de résoudre une erreur à la 
 compilation.
 
@@ -81,8 +81,6 @@ Comme notre modèle est assez simple, la fonction de rafraîchissement est assez
 implémenter.
 
 #+BEGIN_SRC elm
-alias Model = Int
-
 type Msg 
  = Increment 
  | Decrement
