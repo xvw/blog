@@ -816,7 +816,7 @@ conception d'une application web moderne. Comme je l'ai répété à de multiple
 tout au long de l'article, je ne propose pas une architecture inclue dans la 
 Elm-architecture et le code présenté ici n'est, hélas, pas générique.
 
-Le manque d'expressivité du système de types et des modules prive le code général d'une 
+Le manque d'expressivité du système de types et des modules[fn:1] prive le code général d'une 
 certaine forme de réutilisabilité. Même si je le regrette un peu, je dois avouer que 
 c'est loin d'être dramatique et que le langage et son /framework/ me sont très agréables !
 
@@ -851,3 +851,11 @@ me semblent pertinentes. Et je résumerai l'ensemble de cet article par quelques
 
 Pour finir, Elm c'est vraiment cool et facile à appréhender (pour preuve, la partie 
 la plus dur a été, selon moi, la mise en place de [[https://webpack.github.io/][Webpack]]) !
+
+
+[fn:1] Attention, ce n'est évidemment pas une critique, mais une constatation 
+       en comparaison avec des langages comme OCaml ou Haskell.
+       En aucun cas je considère ce manque d'expressivité comme une faiblesse sur 
+       tous les autres aspects. Je suis cependant conscient que la tournure de 
+       phrase peut être prise comme une critique virulente... d'où cette note en 
+       bas de page ... 
