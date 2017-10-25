@@ -5,7 +5,7 @@ date: 2017-10-25
 
 #+BEGIN_QUOTE
 Depuis 2003, comme nous l'indique [[https://openclassrooms.com/courses/le-javascript-moderne][cet article, ]]le JavaScript est utilisé 
-comme une *bytecode*, beaucoup de compilateurs/transpilateurs ciblent 
+comme un *bytecode*, beaucoup de compilateurs/transpilateurs ciblent 
 le JavaScript pour permettre à des développeurs d'écrire des applications web 
 clientes dans leur langage favoris. 
 
@@ -396,7 +396,8 @@ toString route =
                 Home -> [ "" ]
                 About -> [ "about" ]
                 Post -> [ "publish-message" ]
-    in  "#/" ++ (String.join "/" fragment)
+    in  
+      "#/" ++ (String.join "/" fragment)
 
 href : Route -> Attribute messsage
 href route =
@@ -606,6 +607,7 @@ update message model =
     case message of
         Routing potentialRoute ->
             (doRouting model potentialRoute, Cmd.none)
+
         Patch apply_patch ->
             apply_patch model
 #+END_SRC
@@ -671,11 +673,11 @@ dont l'argument unique sera la chaine de caractères demandée par l'événement
 dans notre fonction anonyme, nous pourrons passer cette chaine à notre patch :
 
 #+BEGIN_SRC elm
-  [ input
-     [ Attr.placeholder "A message"
-       , Attr.value state.input
-       , onInput (\s -> Patch (recordInput s))
-     ] []
+ input
+    [ Attributes.placeholder "A message"
+    , Attributes.value state.input
+    , onInput (\s -> Patch (recordInput s))
+    ] []
 #+END_SRC
 
 Voyons, par exemple, comment sauvegarder dans le modèle de la page src_elm{Post}
@@ -695,3 +697,157 @@ recordInput text model  =
     in ({ model | state = state}, Cmd.none)
 #+END_SRC
 
+
+Même si l'on peut se plaindre d'une certaine redondance et, peut être, d'un 
+excès de verbosité, les patches *offrent une manière commode de gérer les mutations*
+*de modèles* et si on les avait remplacés par une succession de messages, 
+il aurait tout de même fallu gérer les modèles "pertinents" au cas par cas, 
+de ce fait, ils me semblent tout indiquer pour mettre en place facilement 
+une notion d'action ponctuelle qui n'implique pas la modification de la 
+fonction de rafraîchissement.
+
+De plus, ils n'empiètent pas sur le /router/, ils semblent donc convenir relativement
+bien pour des *applications hybrides*, qui imposent l'usage d'un /router/ 
+et d'actions ponctuelles.
+
+** Les messages discrets
+
+Le mécanisme de [[https://www.elm-tutorial.org/en/03-subs-cmds/01-subs.html][Souscriptions]] de Elm est largement suffisant pour implémenter les
+*messages discrets*, de plus, ils se marient très bien avec les [[https://hexdocs.pm/phoenix/channels.html][channels]] de Elixir. 
+De plus, comme généralement, le nombre de messages discrets étant pris en charge par
+une application de taille normale est assez limité (au contraire des actions 
+ponctuelle), il n'y a, à mon sens, rien de mal à les traiter au cas par cas. Cependant, 
+si nous voulions traiter ces messages discrets de la même manière que nous traitons 
+les patches, je peux proposer cette extension au type src_elm{Message} :
+
+#+BEGIN_SRC elm
+type Message
+    = Routing (Maybe Route)
+    | Patch (Model -> ( Model, Cmd Message ))
+    | Discrete (Chan -> Model -> ( Model, Cmd Message )) Chan
+
+type Chan
+    = Anonymous { body : String } -- I'm a stereotype !
+    | Indentified { body: String, name: String }
+#+END_SRC
+
+(Dans cet exemple, j'utilise un *port* qui communique avec les channels de Phoenix).
+
+Comme pour les routes, je *sépare* mes différents types de messages discrets au moyen 
+d'une union discriminée, ce qui me permettra de traiter au cas par cas, dans mes 
+fonctions équivalentes à des patches, les données que je reçois.
+
+A la différence d'un patche normal, qui se contente, sur base d'un modèle, d'en produire
+un nouveau, cette fois, les messages discrets *agissent comme la fonction de*
+*rafraîchissement* de la Elm-architecture, ils joignent un message (de type 
+src_elm{Chan}) et un modèle pour construire un nouvau modèle :
+
+#+BEGIN_SRC elm
+update : Message -> Model -> ( Model, Cmd Message )
+update message model =
+    case message of
+        Routing potentialRoute ->
+            (doRouting model potentialRoute, Cmd.none)
+
+        Patch apply_patch ->
+            apply_patch model
+
+        Discrete apply_patch pub ->
+            apply_patch pub model
+#+END_SRC
+
+Implémentons maintenant un patch discret. Sans rentrer dans les détails 
+(inintéressants) de la partie serveur, l'idée est que quand un client 
+arrive sur l'application, il joint un channel quelconque et sur la page 
+src_elm{Post}, il a la possiblité d'envoyer un message anonyme qui sera /broadcasté/
+à toutes les personnes qui se trouvent sur la page au même moment.
+
+Dans le modèle, on garde la liste des messages (des chaines de caractères) qui ont 
+été publiées durant la session de navigation de l'utilisateur et on compte le nombre 
+de message qu'il reçoit pendant qu'il n'est pas sur la page src_elm{Post}. Donc, à 
+chaque fois qu'il se rend sur la page src_elm{Post}, ce compteur de message est remis 
+à zéro :
+
+#+BEGIN_SRC elm
+handleMessage : Chan -> Model -> ( Model, Cmd message )
+handleMessage channel model =
+    let
+        offset =
+            case model.state of
+                Routed (Page.Post _) -> 0
+                _ -> 1
+    in
+        case channel of
+            Anonymous message ->
+                ( { model
+                    | messages = message.body :: model.messages
+                    , total = model.total + offset
+                  } , Cmd.none
+                )
+            _ -> (model, Cmd.none)       
+#+END_SRC
+
+On peut maintenant ajouter ça aux src_elm{subscriptions} de l'application.
+On convertit les résultats que l'on obtient (potentiellement) *en continu* via des 
+*ports* en *messages discrets* :
+
+#+BEGIN_SRC elm
+subscriptions : Model -> Sub Message
+subscriptions model =
+  Sub.batch [ 
+     Ports.subAnonymMessage
+       (\s -> Discrete handleMessage (Anonymous s)) 
+  ]
+#+END_SRC
+
+Par soucis d'extensibilité, j'utilise [[http://package.elm-lang.org/packages/elm-lang/core/5.1.1/Platform-Sub#batch][src_elm{Sub.batch}]] dans le cas où je devrais 
+manipuler plusieurs singaux discrets différents.
+
+Comme l'entièreté de la logique des patches discrets repose sur les souscriptions, 
+il ne faut que rajouter des /producers/ et des traitement dans le /batch/ pour 
+être capable de manipuler n'importe quel type de signaux (/Workers/, /Websockets/ ou 
+encore des /BroadcastChannels/).
+
+
+* Conclusion
+
+Dans cet article, nous avons couvert certains éléments d'interactions utils pour la 
+conception d'une application web moderne. Comme je l'ai répété à de multiple reprises
+tout au long de l'article, je ne propose pas une architecture inclue dans la 
+Elm-architecture et le code présenté ici n'est, hélas, pas générique.
+
+Le manque d'expressivité du système de types et des modules prive le code général d'une 
+certaine forme de réutilisabilité. Même si je le regrette un peu, je dois avouer que 
+c'est loin d'être dramatique et que le langage et son /framework/ me sont très agréables !
+
+En organisant son code entre des modules (qui unissent des fonctionnalités sémantiquement 
+proches), et en n'hésitant pas à ne pas aplatir les modèles et les messages on peut 
+facilement approcher l'idée derrière les /composants/ que l'on nous vend à toutes les 
+sauces et le passage par la fonction de rafraîchissement permet *d'unifier l'ensemble*
+*des composants* (qui sont en fait la conjonction d'un type, et d'une interface).
+
+Quoi qu'il en soit, j'attend avec impatience la sortie de Elm src_elm{0.19} et même si, 
+à mon sens, il serait sûrement possible de faire quelques améliorations au niveau du 
+système de types et de modules (mais à quel prix ?), Elm reste très utilisable en 
+production et très agréable à utiliser. Comme l'ensemble des concepts qu'il manipule 
+sont exposé dans la Elm-architecture, sa /learn-curve/ est très souple ce qui fait de 
+Elm un langage accessible, y comprit pour les gens n'ayant pas un très gros bagage en 
+programmation fonctionnelle statiquement typée.
+
+Le compilateur est une véritable aide pour les phase de /refactoring/  et pour tâcher 
+de traiter un maximum de cas dans toutes les membranes du programme.
+
+Même si actuellement, je ne suis pas satisfait à 100% des premières conclusions que 
+j'amène pour construire une application web hybride en Elm, l'écriture de cet article 
+m'a réellement donné envie de me plonger plus en profondeur dans le langage pour, 
+pourquoi pas, aboutir sur un autre article plus technique.
+
+J'espère que cet article aura tout de même pu mettre en lumière certaines idées qui 
+me semblent pertinentes. Et je résumerai l'ensemble de cet article par quelques points : 
+
+- ne stockez que ce dont vous avez besoin dans vos modèles ;
+- n'hésitez pas à dénormaliser vos modèles et normaliser vos messages ;
+- profitez au maximum de la Elm-architecture (par exemple pour les souscriptions).
+
+Pour finir, Elm c'est vraiment cool et facile à appréhender (pour preuve, la partie 
+la plus dur a été, selon moi, la mise en place de [[https://webpack.github.io/][Webpack]]) !
