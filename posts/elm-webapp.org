@@ -166,8 +166,8 @@ ambitieuse, j'ai dû expérimenter plusieurs voies. Je ne prétend pas que c'est
 courrier éléctronique !
 #+END_QUOTE
 
-Avec l'architecture proposée, on n'est souvent tenté de faire ce qui, à mon sens, 
-est une *erreur monumental* s'il on veut que notre application puisse croître en 
+Avec l'architecture proposée, on est souvent tenté de faire ce qui, à mon sens, 
+est une *erreur monumentale* s'il on veut que notre application puisse croître en 
 fonctionnalités. Avant d'entâmer les retours concrets sur l'implémentation d'une 
 application, j'aimerais mettre en lumière un point de vue que j'ai fait mûrir en 
 développant des applications de plus en plus ambitieuses avec Elm.
