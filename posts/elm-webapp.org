@@ -1,6 +1,7 @@
 ---
 title: Une application web moderne en Elm
 date: 2017-10-25
+description: Implémentations, pas à pas, d'une application moderne en Elm
 ---
 
 #+BEGIN_QUOTE

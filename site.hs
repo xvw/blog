@@ -1,12 +1,27 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 import           Data.Monoid (mappend)
+import           Data.Function ( (&) )
 import           Hakyll
 
 
+
 --------------------------------------------------------------------------------
+
+
+myFeedConfiguration :: FeedConfiguration
+myFeedConfiguration = FeedConfiguration
+    { feedTitle       = "xvw's blog"
+    , feedDescription = "Mon blog qui parle (en général) de code"
+    , feedAuthorName  = "Xavier Van de Woestyne"
+    , feedAuthorEmail = "xaviervdw@gmail.com"
+    , feedRoot        = "https://xvw.github.io"
+    }
+
+
 main :: IO ()
 main = hakyll $ do
+  
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
@@ -29,9 +44,18 @@ main = hakyll $ do
         route $ setExtension "html"
         compile $ pandocCompiler
             >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
+
+    create ["atom.xml"] $ do
+      route idRoute
+      compile $ do
+        let feedCtx = postCtx `mappend` bodyField "description"
+        posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" "content"
+        renderAtom myFeedConfiguration feedCtx posts
+        
     create ["archive.html"] $ do
         route idRoute
         compile $ do
@@ -51,7 +75,8 @@ main = hakyll $ do
     match "index.html" $ do
         route idRoute
         compile $ do
-            posts <- recentFirst =<< loadAll "posts/*"
+            posts <-
+              (recentFirst =<< loadAll "posts/*")
             let indexCtx =
                     listField "posts" postCtx (return posts) `mappend`
                     constField "title" "Accueil"             `mappend`

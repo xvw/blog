@@ -1,6 +1,7 @@
 ---
 title: Un cas d'école à l'utilisation des GADTs
 date: 2017-10-16
+description: Une brève introduction aux types algébriques généralisés avec OCaml
 ---
 
 #+BEGIN_QUOTE
