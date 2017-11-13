@@ -7,16 +7,16 @@ description: Implémentations, pas à pas, d'une application moderne en Elm
 #+BEGIN_QUOTE
 Depuis 2003, comme nous l'indique [[https://openclassrooms.com/courses/le-javascript-moderne][cet article, ]]le JavaScript est utilisé 
 comme un *bytecode*, beaucoup de compilateurs/transpilateurs ciblent 
-le JavaScript pour permettre à des développeurs d'écrire des applications web 
-clientes dans leur langage favori. 
+le JavaScript pour permettre à des développeuses et développeurs
+d'écrire des applications web clientes dans leur langage favori. 
 
 Les applications devenant de plus en plus complexes, principalement grâce à 
 l'évolution des navigateurs web (qui est une conséquence de l'amélioration 
-de notre matériel), beaucoup de développeurs ont fait le choix d'utiliser 
-des *langages statiquement typés* pour faciliter le développement. On peut 
-citer, entre autres, [[https://www.typescriptlang.org/][TypeScript]], [[http://www.purescript.org/][PureScript]], [[https://reasonml.github.io/][ReasonML]] / [[https://ocaml.org/][OCaml]] (avec [[https://bucklescript.github.io/bucklescript/Manual.html][BuckleScript]]
-ou [[http://ocsigen.org/js_of_ocaml/][Js\_of\_ocaml]]) et [[http://elm-lang.org/][Elm]]. Tous ces outils proposant chacun des avantages 
-(et aussi des inconvénients).
+de notre matériel), beaucoup de développeuses et développeurs ont fait le 
+choix d'utiliser  des *langages statiquement typés* pour faciliter le développement. 
+On peut citer, entre autres, [[https://www.typescriptlang.org/][TypeScript]], [[http://www.purescript.org/][PureScript]], [[https://reasonml.github.io/][ReasonML]] / [[https://ocaml.org/][OCaml]] 
+(avec [[https://bucklescript.github.io/bucklescript/Manual.html][BuckleScript]] ou [[http://ocsigen.org/js_of_ocaml/][Js\_of\_ocaml]]) et [[http://elm-lang.org/][Elm]]. 
+Tous ces outils proposant chacun des avantages (et aussi des inconvénients).
 
 Au contraire de beaucoup d'autres technologies, Elm embarque une architecture 
 qui fait office de _framework_ pour construire des applications web. Même si 
