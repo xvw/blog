@@ -35,7 +35,7 @@ navigateur. D'où l'implémentation manuelle de l'historique.
 #+END_QUOTE
 
 Rapellons d'abord ce que nous attendons de notre historique. En définissant bien le 
-périmètre fonctionnel de notre fonctionnalité, nous verrons que le spectre de notre 
+périmètre de notre fonctionnalité, nous verrons que le spectre de notre 
 structure de donnée sera réellement emmergera (une autre approche aurait pu être de 
 rédiger une batterie de tests, cependant, je pense que pour la lisibiltié de l'article, 
 une explication textuelle sera plus adaptée).
