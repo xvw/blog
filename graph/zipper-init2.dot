@@ -1,0 +1,8 @@
+digraph struct {
+	rankdir = LR;
+	node [shape=record];
+	past [label="<f0> aPropos.html |<f1> index.html"];
+	present [label="<f0> liens.html"];
+	//future [label="<f0> "];
+	past:f0 -> present [dir=both] //-> future:f0;
+}

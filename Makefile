@@ -1,3 +1,5 @@
+.PHONY: post-history
+
 all: base-build blog-rebuild
 
 base-build:
@@ -28,3 +30,13 @@ push: blog-rebuild
 	git add deployement
 	git commit -m 'site update'
 	git push origin master
+
+
+%.png : graph/%.dot
+	dot -Tpng -o images/$(@) $(<)
+
+
+clean: blog-clean
+
+
+post-history: zipper-init.png zipper-init2.png  zipper-init3.png zipper-init4.png zipper-init5.png zipper-init6.png zipper-init7.png blog-rebuild

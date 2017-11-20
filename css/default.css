@@ -289,3 +289,30 @@ pre code {
 .small-menu a {
     margin-right: 12px;
 }
+
+.figure {
+    max-width: 100%;
+    padding: 32px;
+}
+
+
+.article >  p > img {
+    max-width: 100%;
+    margin: 32px auto;
+}
+
+.figure {
+    text-align: center;
+}
+
+.figure > img {
+    max-width: 100%;
+    margin: auto;
+}
+
+.figure .caption {
+    margin: 0;
+    text-align: center;
+    font-size: 80%;
+    color: #6fa3a9;
+}

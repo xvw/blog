@@ -1,0 +1,7 @@
+digraph struct {	
+	rankdir=LR;
+	node [shape=record];
+	present [label="<f0> trace un rectangle"];
+	future [label="<f0> colorie le rectangle en rouge | <f1> agrandit le rectangle"]
+	present -> future [dir=both];
+}
