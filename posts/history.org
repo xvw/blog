@@ -52,7 +52,7 @@ historique sur une application web composée de ces différentes pages :
 
 Initialement, quand on démarre une session, l'utilisateur ou l'utilisatrice  ne possède
 qu'un *état courant*. En effet, comme il ou elle vient de démarrer l'application, il
-est impossible qu'il y ait une page précédente et une page suivante et l'était courant
+est impossible qu'il y ait une page précédente et une page suivante et l'état courant
 est la page ~index.html~ :
 
 #+CAPTION: Un exemple de navigation
