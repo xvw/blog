@@ -68,7 +68,7 @@ en passant par la page ~aPropos.html~, nous pouvons techniquement revenir deux f
 [[../images/zipper-init2.png]]
 
 Concrètement, le fait de se rendre sur une autre page consiste simplement à
-*empiler* dans la pile de l'historique la page que l'on quitte. A ce stade, nous avons déjà
+*empiler* dans la pile de l'historique la page que l'on quitte. À ce stade, nous avons déjà
 les ingrédients pour implémenter la stratégie d'enregistrement des pages précédentes.
 
 Imaginons maintenant que l'utilisateur ou l'utilisatrice veuille se rendre sur la page
@@ -94,7 +94,7 @@ l'état précédent, en utilisant *le bouton suivant* (paradoxal, n'est-ce pas) 
 [[../images/zipper-init3.png]]
 
 Et décidons de nous rendre à la page ~contact.html~. Dès lors que l'on ne se sert plus des
-boutons précédents et suivants pour naviguer, notre futur potentiel est *nettoyé* :
+boutons /précédent/ et /suivant/ pour naviguer, notre futur potentiel est *nettoyé* :
 
 
 #+CAPTION: Suppression du futur potentiel
