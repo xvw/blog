@@ -5,6 +5,19 @@ description: Implémentations, pas à pas, d'une application moderne en Elm
 ---
 
 #+BEGIN_QUOTE
+*Note du 5 Décembre 2017*
+
+Attention, bien que le laïus sur la morphologie des messages et des modèles 
+et toujours d'actualité. La proposition des *Patch* des messages *Discrets* 
+a été, à juste titre, remise en question (car cela impose un style 
+*impératif*). Je laisse tout de même l'article parce que je pense que sa 
+première partie et celle sur le routing sont pertinentes et que 
+j'assume mes erreurs... aha.
+
+*Reprise de l'article*
+#+END_QUOTE
+
+#+BEGIN_QUOTE
 Depuis 2003, comme nous l'indique [[https://openclassrooms.com/courses/le-javascript-moderne][cet article, ]]le JavaScript est utilisé 
 comme un *bytecode*, beaucoup de compilateurs/transpilateurs ciblent 
 le JavaScript pour permettre à des développeuses et développeurs
