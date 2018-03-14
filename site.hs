@@ -33,12 +33,7 @@ main = hakyll $ do
     match "js/*" $ do
         route   idRoute
         compile copyFileCompiler
-
-    -- match (fromList ["about.rst", "contact.markdown"]) $ do
-    --     route   $ setExtension "html"
-    --     compile $ pandocCompiler
-    --         >>= loadAndApplyTemplate "templates/default.html" defaultContext
-    --         >>= relativizeUrls
+        
 
     match "posts/*" $ do
         route $ setExtension "html"
@@ -69,6 +64,15 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
                 >>= loadAndApplyTemplate "templates/front.html" archiveCtx
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+                >>= relativizeUrls
+
+    create ["logiciels.html"] $ do
+        route idRoute
+        compile $ do
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/logiciels.html" defaultContext
+                >>= loadAndApplyTemplate "templates/front.html" defaultContext
+                >>= loadAndApplyTemplate "templates/default.html" defaultContext
                 >>= relativizeUrls
 
 
