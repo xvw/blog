@@ -44,7 +44,6 @@ Railscasts-like style (c) Visoft, Inc. (Damien White)
   color: #da4939;
 }
 
-
 .hljs-symbol,
 .hljs-bullet,
 .hljs-built_in,
@@ -105,98 +104,101 @@ Railscasts-like style (c) Visoft, Inc. (Damien White)
   text-decoration: underline;
 }
 
-
 /** My stylesheet */
 
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    padding: 0;
-    font-family: 'Lora', serif;
-    margin: 0;
-    color: #222222;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+  padding: 0;
+  font-family: 'Lora', serif;
+  margin: 0;
+  color: #222222;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
 }
 
-
-h1, h2, h3, h3, h4, h5, h6, h7 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 100;
+h1,
+h2,
+h3,
+h3,
+h4,
+h5,
+h6,
+h7 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 100;
 }
-
 
 main {
-
-    padding: 32px;
-    max-width: 720px;
-    margin: auto;
-    margin-top: 64px;
-    flex: 1;
+  padding: 32px;
+  max-width: 720px;
+  margin: auto;
+  margin-top: 64px;
+  flex: 1;
 }
 
 main h1 {
-    margin: 0;
-    margin-top: 48px;
+  margin: 0;
+  margin-top: 48px;
 }
 
-
 .splash h1 {
-    margin: 0;
-    margin-bottom: 64px;
+  margin: 0;
+  margin-bottom: 64px;
 }
 
 a {
-    color: #045757;
+  color: #045757;
 }
 
-
 .articles h2 {
-    margin: 0;
-    margin-top: 48px;
+  margin: 0;
+  margin-top: 48px;
 }
 
 li {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 
 div.date,
 .publication-item > span {
-    color: #6fa3a9;
+  color: #6fa3a9;
+  font-family: 'Fira Mono', monospace;
+  font-size: 65%;
+  word-spacing: 0;
 }
 
 .publication-item > span {
-    margin-left: 8px;
+  margin-left: 8px;
 }
 
 div.date {
-    margin-bottom: 48px;
-    margin-top: 12px;
+  margin-bottom: 48px;
+  margin-top: 12px;
 }
-
 
 p {
-    text-align: left;
+  text-align: left;
 }
 
-
 .main-title {
-    font-size: 2.8em;
+  font-size: 2.8em;
 }
 
 footer {
-    padding: 12px;
-    background-color: #222222;
-    color: #666;
-    margin-top: 32px;
-    text-align: right;
-    display: flex;
-    flex-direction: row;
+  padding: 12px;
+  background-color: #222222;
+  color: #666;
+  margin-top: 32px;
+  text-align: right;
+  display: flex;
+  flex-direction: row;
 }
 
 footer > div {
@@ -214,119 +216,115 @@ footer img {
 }
 
 footer a {
-    color: #fff;
-    text-decoration: none;
+  color: #fff;
+  text-decoration: none;
 }
 
-.article h2, .article h3, .article h4, .article h5 {
-    margin-top: 62px;
-    margin-bottom: 32px;
+.article h2,
+.article h3,
+.article h4,
+.article h5 {
+  margin-top: 62px;
+  margin-bottom: 32px;
 }
 
 .article p {
-    line-height: 180%;
+  line-height: 180%;
 }
 
-
 .article-footer {
-    text-align: center;
-    margin-top: 120px;
+  text-align: center;
+  margin-top: 120px;
 }
 
 blockquote {
-    font-style: italic;
-    color: #333;
-    margin-bottom: 48px;
-    margin-top: 32px;
+  font-style: italic;
+  color: #333;
+  margin-bottom: 48px;
+  margin-top: 32px;
 }
-
 
 pre {
-    padding: 12px;
-    margin: 32px 0;
-    border-radius: 4px;
-    background-color: #232323;
+  padding: 12px;
+  margin: 32px 0;
+  border-radius: 4px;
+  background-color: #232323;
 }
 code {
-    font-family: 'Fira Mono', monospace;
-    border-radius: 4px;
-    margin: 3px;
-    padding: 1px 6px;
-    background-color: #d8dfe2;
-    color: #000;
+  font-family: 'Fira Mono', monospace;
+  border-radius: 4px;
+  margin: 3px;
+  padding: 1px 6px;
+  background-color: #d8dfe2;
+  color: #000;
 }
 
 pre code {
-    border-radius: 4px;
-    margin: 0;
-    background-color: transparent;
+  border-radius: 4px;
+  margin: 0;
+  background-color: transparent;
 }
-
 
 #disqus_thread {
-    margin-top: 64px;
+  margin-top: 64px;
 }
-
 
 .footnoteRef {
-    text-decoration: none;
+  text-decoration: none;
 }
 
-
 .footnoteRef sup {
-    font-weight: 100;
+  font-weight: 100;
 }
 
 .footnotes {
-    margin-top: 88px;
-    font-size: 80%;
+  margin-top: 88px;
+  font-size: 80%;
 }
 
 .footnotes:before {
-    content: "Notes";
-    font-size: 1.8em;
+  content: 'Notes';
+  font-size: 1.8em;
 }
 
 .footnotes hr {
-    display: none;
+  display: none;
 }
 
 .footnotes p {
-    margin: 0;
-    padding: 0;
-    line-height: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 100%;
 }
-
 
 .small-menu a {
-    margin-right: 12px;
+  margin-right: 12px;
 }
 
 .figure {
-    max-width: 100%;
-    padding: 32px;
+  max-width: 100%;
+  padding: 32px;
 }
 
-
-.article >  p > img {
-    max-width: 100%;
-    margin: 32px auto;
+.article > p > img {
+  max-width: 100%;
+  margin: 32px auto;
 }
 
 .figure {
-    text-align: center;
+  text-align: center;
 }
 
 .figure > img {
-    max-width: 100%;
-    margin: auto;
+  max-width: 100%;
+  margin: auto;
 }
 
 .figure .caption {
-    margin: 0;
-    text-align: center;
-    font-size: 80%;
-    color: #6fa3a9;
+  margin: 0;
+  text-align: center;
+  font-size: 80%;
+  color: #6fa3a9;
 }
 
 .softwares {
@@ -351,57 +349,86 @@ pre code {
   font-family: 'Fira Mono', monospace;
   font-size: 80%;
   margin-right: 6px;
+  display: inline-block;
+  margin-top: 6px;
 }
-.software .tag[data-tag="mit"] {
+.software .tag[data-tag='mit'] {
   background-color: #f2f2f2;
   color: #666;
 }
 
-.software .tag[data-tag="mit"]::before {
-  content: "MIT";
+.software .tag[data-tag='mit']::before {
+  content: 'MIT';
 }
 
-.software .tag[data-tag="elm"] {
-  background-color: #75E2E4;
+.software .tag[data-tag='elm'] {
+  background-color: #75e2e4;
   color: #071414;
 }
 
-.software .tag[data-tag="elm"]::before {
-  content: "Elm";
+.software .tag[data-tag='elm']::before {
+  content: 'Elm';
 }
 
-.software .tag[data-tag="electron"] {
-  background-color: #4931A8;
-  color: #FFF;
+.software .tag[data-tag='electron'] {
+  background-color: #4931a8;
+  color: #fff;
 }
 
-.software .tag[data-tag="electron"]::before {
-  content: "Electron";
+.software .tag[data-tag='electron']::before {
+  content: 'Electron';
 }
 
-.software .tag[data-tag="vxace"] {
-  background-color: #DE6394;
-  color: #FFF;
+.software .tag[data-tag='vxace'] {
+  background-color: #de6394;
+  color: #fff;
 }
 
-.software .tag[data-tag="vxace"]::before {
-  content: "RPGMaker VXAce";
+.software .tag[data-tag='vxace']::before {
+  content: 'RPGMaker VXAce';
 }
 
-.software .tag[data-tag="ruby"] {
+.software .tag[data-tag='mv'] {
+  background-color: #a567b2;
+  color: #fff;
+}
+
+.software .tag[data-tag='mv']::before {
+  content: 'RPGMaker MV';
+}
+
+.software .tag[data-tag='javascript'] {
+  background-color: #ffe669;
+  color: #000;
+}
+
+.software .tag[data-tag='javascript']::before {
+  content: 'JavaScript';
+}
+
+.software .tag[data-tag='haskell'] {
+  background-color: #00a0ad;
+  color: #fff;
+}
+
+.software .tag[data-tag='haskell']::before {
+  content: 'Haskell';
+}
+
+.software .tag[data-tag='ruby'] {
   background-color: #770007;
-  color: #FFF;
+  color: #fff;
 }
 
-.software .tag[data-tag="ruby"]::before {
-  content: "Ruby";
+.software .tag[data-tag='ruby']::before {
+  content: 'Ruby';
 }
 
-.software .tag[data-tag="ocaml"] {
-  background-color: #E87E0C;
-  color: #FFF;
+.software .tag[data-tag='ocaml'] {
+  background-color: #e87e0c;
+  color: #fff;
 }
 
-.software .tag[data-tag="ocaml"]::before {
-  content: "OCaml";
+.software .tag[data-tag='ocaml']::before {
+  content: 'OCaml';
 }
