@@ -16,3 +16,11 @@ pu aussi redécouvrir le plaisir de peindre avec des gens cools !
 #+CAPTION: De derrière les rails
 #+NAME: fig:goz2
 [[../images/goz2.jpg]]
+
+#+CAPTION: Fresque finale
+#+NAME: fig:goz3
+[[../images/goz3.jpg]]
+
+#+CAPTION: Fresque de Gozar
+#+NAME: fig:goz4
+[[../images/goz4.jpg]]
