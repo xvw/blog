@@ -1,0 +1,18 @@
+---
+title: Entre Lille et Bethune, avec Gozar
+date: 2018-08-11
+---
+
+La [[./skatepark1.html][sortie précédente]] m'a fait énormément plaisir, et Gozar à eu la
+sympathie de me proposer de remettre le couvert le week-end suivant.
+Non seulement le climat et le terrain étaient parfait, mais j'ai
+pu aussi redécouvrir le plaisir de peindre avec des gens cools !
+(En plus ça commence à revenir !)
+
+#+CAPTION: Rendu final
+#+NAME: fig:goz1
+[[../images/goz1.jpg]]
+
+#+CAPTION: De derrière les rails
+#+NAME: fig:goz2
+[[../images/goz2.jpg]]

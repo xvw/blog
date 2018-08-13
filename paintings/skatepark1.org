@@ -1,0 +1,13 @@
+---
+title: Reprise après 2 ans d'interruption, seul
+date: 2018-08-05
+---
+
+De retour de vacances, je me suis dit que ça faisait bien longtemps que
+je n'avais plus fait de peinture. Même si j'étais très rouillé (et que
+j'ai eu du mal à gérer la pressions des /spray's/), c'était une
+après-midi très agréable au [[https://www.lille.fr/Nos-equipements/Halle-de-glisse][Hall de glisse]].
+
+#+CAPTION: Rendu final
+#+NAME: fig:skatepark1
+[[../images/skatepark1.jpg]]

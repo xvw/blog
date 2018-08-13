@@ -21,7 +21,7 @@ myFeedConfiguration = FeedConfiguration
 
 main :: IO ()
 main = hakyll $ do
-  
+
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
@@ -33,7 +33,7 @@ main = hakyll $ do
     match "js/*" $ do
         route   idRoute
         compile copyFileCompiler
-        
+
 
     match "posts/*" $ do
         route $ setExtension "html"
@@ -43,6 +43,12 @@ main = hakyll $ do
             >>= loadAndApplyTemplate "templates/default.html" postCtx
             >>= relativizeUrls
 
+    match "paintings/*" $ do
+        route $ setExtension "html"
+        compile $ pandocCompiler
+            >>= loadAndApplyTemplate "templates/post.html"    postCtx
+            >>= loadAndApplyTemplate "templates/default.html" postCtx
+            >>= relativizeUrls
 
     create ["atom.xml"] $ do
       route idRoute
@@ -50,15 +56,15 @@ main = hakyll $ do
         let feedCtx = postCtx `mappend` bodyField "description"
         posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" "content"
         renderAtom myFeedConfiguration feedCtx posts
-        
+
     create ["archive.html"] $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
             let archiveCtx =
-                    listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Archives"            `mappend`
-                    defaultContext
+                  listField "posts" postCtx (return posts) `mappend`
+                  constField "title" "Archives"            `mappend`
+                  defaultContext
 
             makeItem ""
                 >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -75,6 +81,22 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" defaultContext
                 >>= relativizeUrls
 
+    create ["peintures.html"] $ do
+        route idRoute
+        compile $ do
+          paintings <-
+            (recentFirst =<< loadAll "paintings/*")
+          let paintCtx =
+                listField "paintings" postCtx (return paintings) `mappend`
+                constField "title" "Peintures"             `mappend`
+                defaultContext
+
+          makeItem ""
+              >>= loadAndApplyTemplate "templates/peintures.html" paintCtx
+              >>= loadAndApplyTemplate "templates/front.html" paintCtx
+              >>= loadAndApplyTemplate "templates/default.html" paintCtx
+              >>= relativizeUrls
+
 
     match "index.html" $ do
         route idRoute
@@ -82,9 +104,9 @@ main = hakyll $ do
             posts <-
               (recentFirst =<< loadAll "posts/*")
             let indexCtx =
-                    listField "posts" postCtx (return posts) `mappend`
-                    constField "title" "Accueil"             `mappend`
-                    defaultContext
+                  listField "posts" postCtx (return posts) `mappend`
+                  constField "title" "Accueil"             `mappend`
+                  defaultContext
 
             getResourceBody
                 >>= applyAsTemplate indexCtx
@@ -100,4 +122,3 @@ postCtx :: Context String
 postCtx =
     dateField "date" "%0d du %0m %0Y" `mappend`
     defaultContext
-

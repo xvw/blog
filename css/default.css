@@ -137,6 +137,7 @@ h7 {
 
 main {
   padding: 32px;
+  width: 100%;
   max-width: 720px;
   margin: auto;
   margin-top: 64px;
