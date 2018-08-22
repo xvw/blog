@@ -16,7 +16,7 @@ ou d'avoir au moins trifouillé IO en Haskell. Mais bon, vous pouvez quand
 même lire l'article sinon (évidemment).
 
 L'objectif réel de cet article est de concrétiser (du mieux que je peux) une
-intuition lié aux monades. Parce que ça permet, parfois, d'écrire du code
+intuition liée aux monades. Parce que ça permet, parfois, d'écrire du code
 lisible, et puis c'est toujours cool de pouvoir se servir de mots compliqué
 pour expliquer des choses concrètes (pour peu que l'on donne les outils pour
 être compris !)
