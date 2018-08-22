@@ -498,7 +498,7 @@ Qui donnera le résultat src_ocaml{Some 21}.
 
 Nous avons survolé quelques cas d'écoles liés à ces deux monades. Cet partie
 de l'article peut être assez touffue (et peut être compliquée) pour les lecteurs
-non initiés. Dans la section précédente, nous tâcherons de revenir sur les
+non initiés. Dans la section suivante, nous tâcherons de revenir sur les
 caractéristiques fondamentales des monades au moyen de métaphores. L'objectif
 sera de clarifier l'usage concret de ces deux monades au travers des bouts de
 définitions que nous avions évoqués auparavant.
