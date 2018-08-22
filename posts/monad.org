@@ -23,7 +23,7 @@ pour expliquer des choses concrètes (pour peu que l'on donne les outils pour
 #+END_QUOTE
 
 Il m'arrive souvent de lire, sur /les internets/, que la communauté des
-programmeurs fonctionnel est élitiste. Même si je ne me considère pas comme
+programmeurs fonctionnels est élitiste. Même si je ne me considère pas comme
 appartenant à cette communauté, je dois avouer que quand j'ai eu des questions
 (pleins de questions !) à lui poser, j'ai très souvent eu des réponses claires,
 tenant bien souvent compte du fait que j'étais (et suis toujours) un total néophyte
