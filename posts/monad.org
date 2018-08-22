@@ -53,9 +53,9 @@ d'élitisme /latent/, bien que peu pernicieuse. J'ai rarement entendu quelqu'un 
 
 ** De la théorie des catégories à la programmation
 
-Historiquement appelé "/constructions standards/" ou "/triples/" en topologie
+Historiquement appelées "/constructions standards/" ou "/triples/" en topologie
 algébrique dans les années 50, c'est en 1971 que [[https://en.wikipedia.org/wiki/Saunders_Mac_Lane][Saunders MacLane]] leur donne le
-nom de *monade*, en référence au /concept philosophique/ du même nom, et en
+nom de *monades*, en référence au /concept philosophique/ du même nom, et en
 l'utilisant dans *la théorie des catégories*. Il introduit aussi une des
 /punchlines/ les plus /badass/ du monde de la programmation fonctionnelle (à
 mon sens), "/a monad is a monoid in the category of endofunctors/". Ce qui est
@@ -77,8 +77,8 @@ de l'article en ajoutant des petits symboles grecs un peu partout !
 
 Concrètement, essayons de voir rapidement ce que tout cela veut dire :
 
-- le $T$ de notre foncteur signifique qu'il s'agit d'un *type paramétré*, par
-  exemple /une liste de choses/ (src_ocaml{'a list}), ou une option de quelque
+- le $T$ de notre foncteur signifie qu'il s'agit d'un *type paramétré*, par
+  exemple /une liste de choses/ (src_ocaml{'a list}), ou d'une option de quelque
   chose (src_ocaml{'a option}) ;
 - les transformations naturelles $\eta$ et $\mu$ sont en quelques sortes des
   fonctions ;
@@ -100,7 +100,7 @@ d'un foncteur. Et les deux transformations naturelles deviennent des *fonctions*
 src_ocaml{join} pour $\mu$ et src_ocaml{pure} pour $\eta$.
 
 Dans l'exemple ci-dessous, j'utilise un module pour représenter les opérations
-liés à une monade.
+liées à une monade.
 
 #+BEGIN_SRC ocaml
 module type MONAD =
@@ -124,9 +124,9 @@ src_ocaml{return}, j'ai pris la décision d'utiliser src_ocaml{pure} pour
 impérative.
 #+END_QUOTE
 
-Nous avons encodé, en OCaml, une partie des ingrédients évoqué en théorie des
+Nous avons encodé, en OCaml, une partie des ingrédients évoqués en théorie des
 catégories, cependant, dans la définition, il était question de certaines
-contraintes liés aux transformations naturelles.
+contraintes liées aux transformations naturelles.
 
 On pose donc les deux contraintes (qu'on appelle des "*lois*") :
 
@@ -138,7 +138,7 @@ transformations naturelles, nous avions évoqué que c'était "presque pareil".
 Les transformations naturelles impliquent des lois complémentaires, qui sont
 implicites dans la définition catégorique car on est *explicite* sur le fait
 qu'il s'agit de transformations naturelles. Ici comme on utilise des fonctions,
-il est nécéssaires d'adjoindre 4 lois pour formaliser le fait que les deux
+il est nécessaires d'adjoindre 4 lois pour formaliser le fait que les deux
 fonctions src_ocaml{join} et src_ocaml{pure} sont bien des transformations
 naturelles :
 
@@ -152,18 +152,18 @@ que la fonction de /mapping/ termine. De ce fait, *la définition dans un langag
 *fonctionnel n'est pas formellement une monade de la théorie des catégories*.
 
 Mais dans l'absolu, est-ce que ça nous concerne réellement quand on est
-utilisateur de bibliothèque monadiques ?
+utilisateur de bibliothèques monadiques ?
 
 *** Une différence entre la définition /catégorique/ et /programmatique/
 
 En fait, le point essentiel de cette introduction un peu barbante, c'est que
 même si elles sont analogues, elles sont aussi différentes. En théorie des
-catégories, les monades ont étés développées par Moggi pour *raisonner* à
+catégories, les monades ont été développées par Moggi pour *raisonner* à
 propos des programmes à effets, alors que les monades présentées par Wadler
 sont utilisées pour *implémenter* des programmes à effets dans un langage
 de programmation fonctionnel pur. En plus de ça, la sémantique du contexte
 fait légèrement varier les deux définitions de monades, certains aspects
-des propositions de Moggi ne sont pas nécéssaires dans une monade définie
+des propositions de Moggi ne sont pas nécessaires dans une monade définie
 dans le contexte d'un langage de programmation.
 
 Donc même si connaitre l'origine mathématique d'un objet de programmation
@@ -789,7 +789,7 @@ Le premier apport lié à l'usage des monades est qu'elles offrent une manière
 *systèmatique* de structurer un programme en deux parties bien distincts :
 
 - l'algorithme à proprement parlé ;
-- l'outillage nécéssaire à cet algorithme (par exemple un état). Et cet outillage
+- l'outillage nécessaire à cet algorithme (par exemple un état). Et cet outillage
   peut être masqué dans des bibliothèque (potentiellement réutilisables).
 
 De plus, elles permettent aussi de rendre explicite le flot d'un programme, d'une
@@ -802,7 +802,7 @@ monades amènent une notion de *composition* élégante et uniforme.
 
 Même si dans les exemples précédents, nous n'avons utilisé des versions minimales
 de nos monades, en utilisant une interface (volontairement) limité, les monades
-exposent [[http://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html][un grand nombre de fonctions complémentaires]]. Ces fonctions ne nécéssitent
+exposent [[http://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html][un grand nombre de fonctions complémentaires]]. Ces fonctions ne nécessitent
 généralement que les fonctions exposées par notre interface minimaliste pour être
 implémentée, de ce fait, n'implémenter que 2 ou 3 fonctions peut suffire à
 construire une interface riche, et ce pour toutes les monades. Par exemple, les
@@ -903,6 +903,9 @@ pour votre lecture et à bienôt !
 commentaires, un lien vers les sources du blog, et donc de cet article,
 n'hésitez pas à faire une PR ou à écrire un commentaire !
 #+END_QUOTE
+
+Je remercie grandement Anne-Charlotte et Jules pour avoir relu (et fait remonter)
+pleins de petites coquilles !
 
 [fn:1] Ce n'est pas une moquerie ou une critique, même si le ton est un peu
        sarcastique, je comprend évidemment ce genre de raccourci.
