@@ -45,10 +45,10 @@ pas du tout qu'il s'agissait de monades). Pour ça, on s'intéressera aux origin
 des monades, et on en présentera sommairement quelques unes.
 
 Par contre, je pense que le terme est parfois trop utilisé, par exemple :
-"/Ah ! Ta fonction doit potentiellement ne rien renvoyer ? Tu n'as qu'a utiliser/
+"/Ah ! Ta fonction doit potentiellement ne rien renvoyer ? Tu n'as qu'à utiliser/
 /la monade Option/ !". Je pense que ce genre de phrase véhicule une idée
-d'élitisme /latent/, bien que peu pernicieuse. J'ai rarement lu quelqu'un dire
-"/Ah ! tu veux transformer les données d'une liste en autre chose ? Tu n'as qu'a/
+d'élitisme /latent/, bien que peu pernicieuse. J'ai rarement entendu quelqu'un dire
+"/Ah ! tu veux transformer les données d'une liste en autre chose ? Tu n'as qu'à/
 /utiliser le Foncteur List/".[fn:1]
 
 ** De la théorie des catégories à la programmation
