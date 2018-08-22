@@ -93,7 +93,7 @@ typé, comme *OCaml* par exemple.
 
 *** Traduction d'une définition catégorique dans un langage fonctionnel
 
-La traduction est proposée par [[http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf][Philip Wadler]] considère que le foncteur
+La traduction proposée par [[http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf][Philip Wadler]] considère que le foncteur
 devient *un constructeur de type* (un type paramétré)
 avec une fonction de /mapping/, ce qui correspond formellement à la définition
 d'un foncteur. Et les deux transformations naturelles deviennent des *fonctions*,
