@@ -256,7 +256,7 @@ des monades pourrait être de proposer deux petites définitions :
 
 Concrètement, il suffit d'implémenter une des deux interfaces en veillant bien
 à respecter "les lois" pour avoir une monade. Donc *il n'existe pas, à priori,
-de nombre fini de monade*. Même s'il en existe des courantes, la condition
+de nombre fini de monades*. Même s'il en existe des courantes, la condition
 pour être une monade est de respecter les pré-requis des interfaces précédemment
 évoquées (tout en respectant leur lois).
 
