@@ -168,7 +168,7 @@ dans le contexte d'un langage de programmation.
 
 Donc même si connaitre l'origine mathématique d'un objet de programmation
 est sans doute toujours intéressant, il ne faut pas développer d'analogies
-trop fortes, pour ne pas tendre vers une stricte équivalence entre le concepts
+trop fortes, pour ne pas tendre vers une stricte équivalence entre le concept
 initial, issu des mathématiques, et son implémentation concrète dans un langage
 de programmation parce qu'il est fort probable que certaines règles, certains
 outils soient légèrement altérés par le changement de contexte.
@@ -179,7 +179,7 @@ Ne retenons donc que la phrase "/A monad is just a monoid in the category of/
 ** Les monades en programmation fonctionnelle
 
 En général, quand on lit des ressources sur les monades, on utilise parfois
-(... oké, souvent) un autre interface :
+(... oké, souvent) une autre interface :
 
 #+BEGIN_SRC ocaml
 module type MONAD =
@@ -191,7 +191,8 @@ end
 #+END_SRC
 
 #+BEGIN_QUOTE
-*NB:* Dans certain langage, src_ocaml{>>=} s'appelle parfois src_ocaml{flatMap}.
+*NB:* Dans certains langages, src_ocaml{>>=} s'appelle parfois
+src_ocaml{flatMap}.
 #+END_QUOTE
 
 Qui doit satisfaire ces lois :
@@ -224,11 +225,11 @@ let (>>=) x f = join (map f x)
 #+END_QUOTE
 
 Cette équivalence est possible si l'on respecte les lois que nous avons
-évoqué précédemment. C'est d'ailleurs tout l'intérêts de ces dernières. Elles
+évoquées précédemment. C'est d'ailleurs tout l'intérêt de ces dernières. Elles
 permettent, en plus de créer une équivalence entre les deux interfaces, de
-dériver une [[http://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html][collections de combinateurs]] utiles lorsque l'on travaille avec
-des monades. Donc ces deux interfaces, couplés à leurs "lois", sont les
-prérequis minimum pour découler une série d'outils très utiles. Cependant, nous
+dériver une [[http://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html][collection de combinateurs]] utiles lorsque l'on travaille avec
+des monades. Donc ces deux interfaces, couplées à leurs "lois", sont les
+prérequis minimums pour découler une série d'outils très utiles. Cependant, nous
 ne les développerons pas dans cet article.
 
 Concrètement, ces lois sont des axiomes attachés aux monades. Ils peuvent
@@ -245,12 +246,13 @@ fonctionnelle statiquement typé.
 ** Tout ça, ce ne sont que des interfaces !
 
 Jusqu'à présent, nous avons observé (de loin) l'origine des monades et nous
-les avons représentés sous forme d'interfaces. Mais ça ne nous dit toujours
+les avons représentées sous forme d'interfaces. Mais ça ne nous dit toujours
 pas ce que c'est et à quoi ça sert. Une manière de résumer le concept derrière
 des monades pourrait être de proposer deux petites définitions :
 
 - une monade *encapsule* un /objet/ dans une structure plus riche ;
-- et elle permet d'exprimer plusieurs *types de constructions* pour une *même structure*.
+- et elle permet d'exprimer plusieurs *types de construction* pour une
+  *même structure*.
 
 Concrètement, il suffit d'implémenter une des deux interfaces en veillant bien
 à respecter "les lois" pour avoir une monade. Donc *il n'existe pas, à priori,
