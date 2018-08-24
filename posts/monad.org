@@ -166,7 +166,7 @@ fait légèrement varier les deux définitions de monades, certains aspects
 des propositions de Moggi ne sont pas nécessaires dans une monade définie
 dans le contexte d'un langage de programmation.
 
-Donc même si connaitre l'origine mathématique d'un objet de programmation
+Donc même si connaître l'origine mathématique d'un objet de programmation
 est sans doute toujours intéressant, il ne faut pas développer d'analogies
 trop fortes, pour ne pas tendre vers une stricte équivalence entre le concept
 initial, issu des mathématiques, et son implémentation concrète dans un langage
