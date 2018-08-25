@@ -475,7 +475,9 @@ let liftM2 f x y =
   y >>= fun b -> pure (f a b)
 
 (* Pour les fonctions à trois paramètres *)
-val liftM3 : ('a -> 'b -> 'c -> 'd) -> 'a t -> 'b t -> 'c t -> 'd t
+val liftM3 :
+  ('a -> 'b -> 'c -> 'd) -> 'a t -> 'b t -> 'c t
+  -> 'd t
 let liftM3 f x y =
   x >>= fun a ->
   y >>= fun b ->

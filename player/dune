@@ -1,0 +1,7 @@
+(executable
+  (name player)
+  (js_of_ocaml
+    (flags :standard --opt 3))
+  (preprocess (pps js_of_ocaml-ppx))
+  (libraries js_of_ocaml-lwt)
+)

@@ -1,6 +1,3 @@
-# Created by https://www.gitignore.io/api/haskell
-
-### Haskell ###
 dist
 cabal-dev
 *.o
@@ -20,3 +17,8 @@ cabal.sandbox.config
 _cache/
 _site/
 .DS_Store
+_build
+.merlin
+*.bc.js
+*.bc.map
+*.install

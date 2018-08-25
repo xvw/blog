@@ -1,0 +1,96 @@
+---
+title: Marques-pages internes d'articles
+date: 2018-08-30
+description: Amélioration de l'expérience utilisateur du blog
+---
+
+#+BEGIN_QUOTE
+Il m'arrive très souvent de trouver que "le web" est assez mal utilisé
+en règle général. Par exemple, je trouve ça vraiment triste que les
+articles "en ligne" de journaux n'exploitent pas la notion de "documents
+riches" pour présenter leurs articles. Pourtant, il existe beaucoup de
+projets intéressants (comme [[https://thegamma.net/][The Gamma]] ou [[https://pudding.cool/][The pudding]]) qui démontrent
+l'intérêt des documents riches.
+
+Pourtant, malgré mon dépit, mon blog n'est pas vraiment un exemple
+d'interactivité ! Dans cet article, je vous propose de découvrir
+l'implémentation d'une fonctionnalité qui fait directement écho à ma
+dernière publication !
+
+Cet article est dans un format très différent de ce que j'ai pu rédiger
+auparavant, il présente une fonctionnalité liée "à ce blog". Les motivations
+sous-jacentes, les inspirations et quelques commentaires divers et variés !
+#+END_QUOTE
+
+Après la publication de [[../posts/monad.html][mon dernier article]], en plus des retours orthographiques,
+beaucoup de personnes m'ont fait remarquer qu'il était fort long. Que j'aurais
+peut être dût le fragmenter en plusieurs parties. Maintenant qu'il est publié,
+je trouvais ça un peu dommage de le découper, d'autant plus que mon objectif
+était de fournir une base "théorique" pour d'éventuels articles futurs. Un autre
+retour récurrent portait sur l'absence de /playground/ pour observer le comportement
+du code. Ce n'est, hélas, pas (pour le moment) la thématique de l'article
+
+Un ami, [[https://mehdi-beddiaf.com/][Mehdi]], m'a très justement fait la réflexion que, pour être consommé dans
+son entièreté, il fallait prendre facilement plus d'une heure. Donc que la
+fragmentation de l'article aurait permis de rapidement "reprendre la lecture"
+là où on l'aurait laissé. Bref, d'utiliser la découpe en plusieurs pages comme
+manière de découper sa lecture.
+
+L'objectif de cet article est de présenter une fonctionnalité que j'ai implémenté
+(tout en écrivant cet article) pour permettre de rendre la reprise de lecture
+plus facile et de motiver certains choix lié aux fonctionnalités ajoutées !
+
+** Sur le choix de Hakyll
+
+Initialement, pour garder un contrôle total sur ce que je pouvais développer,
+j'ai décidé d'implémenter, à la main, tout mon système de publication. Comme
+souvent quand je travaille sur un projet personnel, j'a tâché de faire quelque
+de très générique, qui pouvait faire tout ce à quoi je pensais (et potentiellement
+extensible /à gogo/). Le projet, qui devait être un simple générateur de blog
+statiques est devenu titanesque, à tel point que 3 mois après avoir démarré le
+développement, je n'avais toujours rien d'utilisable ! (Logique.)
+
+En suivant les conseils de plusieurs personnes, j'ai décidé d'utiliser
+/temporairement/ (aha) une solution déjà existante pour démarrer l'exercice de
+rédaction. J'ai choisi [[https://jaspervdj.be/hakyll/][Hakyll]], parce qu'en plus d'être développé en Haskell (qui
+est un langage que j'aime quand même bien), il était présenté comme très flexible.
+En effet, Hakyll n'est pas un générateur de blogs statiques, mais *un générateur*
+*de générateur de blogs statiques* ! En plus, comme Hakyll utilise [[https://pandoc.org/][Pandoc]] pour
+générer les documents HTML, je pouvais facilement choisir un langage de
+/markup/ suffisament expressif pour écrire tout ce que je voulais.
+
+Je ne regrette absolument pas mon choix, à tel point que pour le moment, il n'est
+pas question de migrer mon blog vers une solution artisanale. Cependant, je n'ai
+pas oublié mes envies de "construction de documents riches", et comme Hakyll est
+très flexible, je peux facilement ajouter des fonctionnalités pour améliorer
+la navigation.
+
+
+** Une lecture /resumable/ (que l'on peut reprendre)
+
+Nos navigateurs nous permettent facilement de sauvegarder des pages via les
+marques-pages. Cependant, comme lorsque l'on utilise un marque-pages pour un
+livre, ces derniers ne sauvegardent "que" la page. Bien qu'il soit possible de
+ruser avec des ancres, l'objectif d'un marque-pages est de pouvoir facilement
+revenir sur une page spécifique.
+
+Les marques-pages du navigateur ne solutionnent pas le problème des articles
+trop longs. De plus, généralement, on édite rarement un marque-pages.
+
+*** S'inspirer de Netflix
+
+J'ai un avis assez mitigé sur l'expérience utilisateur de [[https://netflix.com][Netflix]]. Il y a certaines
+choses que je trouve vraiment géniales, d'autres que je trouve contre-intuitives
+à souhait.
+
+La fonctionnalité que je trouve vraiment excellent, c'est la possibilité de
+reprendre une vidéo en cours. Je la trouve terriblement pratique. L'objectif de
+l'amélioration ergonomique que je souhaite mettre en place sur mon blog est un
+instrument un peu similaire à cette fonctionnalité de Netflix, la possibilité de
+reprendre un article là où on l'aurait laissé !
+
+Évidemment, il y aurait quelques différences avec la solution implémentée dans
+le /player/ de Netflix, pour des raisons de supports. Il est évident qu'un
+article propose n'est pas identique à une vidéo.
+
+Sans plus attendre, voyons le fonctionnement général de l'outil.
