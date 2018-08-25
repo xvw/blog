@@ -114,7 +114,7 @@ Railscasts-like style (c) Visoft, Inc. (Damien White)
 
 body {
   padding: 0;
-  font-family: 'Lora', serif;
+  font-family: "Lora", serif;
   margin: 0;
   color: #222222;
   height: 100vh;
@@ -131,7 +131,7 @@ h4,
 h5,
 h6,
 h7 {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-weight: 100;
 }
 
@@ -170,7 +170,7 @@ li {
 div.date,
 .publication-item > span {
   color: #6fa3a9;
-  font-family: 'Fira Mono', monospace;
+  font-family: "Fira Mono", monospace;
   font-size: 65%;
   word-spacing: 0;
 }
@@ -252,7 +252,7 @@ pre {
   background-color: #232323;
 }
 code {
-  font-family: 'Fira Mono', monospace;
+  font-family: "Fira Mono", monospace;
   border-radius: 4px;
   margin: 3px;
   padding: 1px 6px;
@@ -284,7 +284,7 @@ pre code {
 }
 
 .footnotes:before {
-  content: 'Notes';
+  content: "Notes";
   font-size: 1.8em;
 }
 
@@ -347,89 +347,176 @@ pre code {
   color: white;
   padding: 4px 16px;
   border-radius: 4px;
-  font-family: 'Fira Mono', monospace;
+  font-family: "Fira Mono", monospace;
   font-size: 80%;
   margin-right: 6px;
   display: inline-block;
   margin-top: 6px;
 }
-.software .tag[data-tag='mit'] {
+.software .tag[data-tag="mit"] {
   background-color: #f2f2f2;
   color: #666;
 }
 
-.software .tag[data-tag='mit']::before {
-  content: 'MIT';
+.software .tag[data-tag="mit"]::before {
+  content: "MIT";
 }
 
-.software .tag[data-tag='elm'] {
+.software .tag[data-tag="elm"] {
   background-color: #75e2e4;
   color: #071414;
 }
 
-.software .tag[data-tag='elm']::before {
-  content: 'Elm';
+.software .tag[data-tag="elm"]::before {
+  content: "Elm";
 }
 
-.software .tag[data-tag='electron'] {
+.software .tag[data-tag="electron"] {
   background-color: #4931a8;
   color: #fff;
 }
 
-.software .tag[data-tag='electron']::before {
-  content: 'Electron';
+.software .tag[data-tag="electron"]::before {
+  content: "Electron";
 }
 
-.software .tag[data-tag='vxace'] {
+.software .tag[data-tag="vxace"] {
   background-color: #de6394;
   color: #fff;
 }
 
-.software .tag[data-tag='vxace']::before {
-  content: 'RPGMaker VXAce';
+.software .tag[data-tag="vxace"]::before {
+  content: "RPGMaker VXAce";
 }
 
-.software .tag[data-tag='mv'] {
+.software .tag[data-tag="mv"] {
   background-color: #a567b2;
   color: #fff;
 }
 
-.software .tag[data-tag='mv']::before {
-  content: 'RPGMaker MV';
+.software .tag[data-tag="mv"]::before {
+  content: "RPGMaker MV";
 }
 
-.software .tag[data-tag='javascript'] {
+.software .tag[data-tag="javascript"] {
   background-color: #ffe669;
   color: #000;
 }
 
-.software .tag[data-tag='javascript']::before {
-  content: 'JavaScript';
+.software .tag[data-tag="javascript"]::before {
+  content: "JavaScript";
 }
 
-.software .tag[data-tag='haskell'] {
+.software .tag[data-tag="haskell"] {
   background-color: #00a0ad;
   color: #fff;
 }
 
-.software .tag[data-tag='haskell']::before {
-  content: 'Haskell';
+.software .tag[data-tag="haskell"]::before {
+  content: "Haskell";
 }
 
-.software .tag[data-tag='ruby'] {
+.software .tag[data-tag="ruby"] {
   background-color: #770007;
   color: #fff;
 }
 
-.software .tag[data-tag='ruby']::before {
-  content: 'Ruby';
+.software .tag[data-tag="ruby"]::before {
+  content: "Ruby";
 }
 
-.software .tag[data-tag='ocaml'] {
+.software .tag[data-tag="ocaml"] {
   background-color: #e87e0c;
   color: #fff;
 }
 
-.software .tag[data-tag='ocaml']::before {
-  content: 'OCaml';
+.software .tag[data-tag="ocaml"]::before {
+  content: "OCaml";
+}
+
+.history-tooltip {
+  background-color: #fff;
+  padding: 12px;
+  font-size: 0.8em;
+  color: #bbb;
+  border-radius: 4px;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+}
+
+.history-tooltip > * {
+  margin: 0 8px;
+}
+.history-tooltip .progress {
+  width: 200px;
+  background-color: #f2f2f2;
+  align-self: stretch;
+  margin: 4px;
+  position: relative;
+  border-radius: 4px;
+}
+
+.history-tooltip .progress > div {
+  background-color: #d4d4d4;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 4px;
+  transition: all 0.8s ease;
+}
+
+/* .history-tooltip > div {
+  display: flex;
+}
+
+.history-tooltip > div > span {
+  flex: 1;
+}
+
+.history-tooltip > div > * {
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+} */
+
+.history-tooltip a,
+.history-tooltip button {
+  padding: 4px 12px;
+  border: 1px solid #eee;
+  background-color: #fff;
+  color: #bbb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size: 0.8;
+}
+
+.history-tooltip a:hover,
+.history-tooltip button:hover {
+  color: #888;
+}
+
+.history-tooltip:empty {
+  display: none;
+}
+
+@media screen and (max-width: 640px) {
+  .history-tooltip {
+    flex-direction: column;
+  }
+
+  .history-tooltip .progress {
+    display: none;
+  }
+
+  .history-tooltip > * {
+    margin: 8px;
+  }
 }
