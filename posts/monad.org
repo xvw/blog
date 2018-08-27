@@ -814,7 +814,7 @@ fonctions de promotion (/lifting/) que nous avons évoqués précédemment sont
 génériques et ne peuvent être implémentée qu'une seule fois et être offerte par
 le module paramétré qui construit une monade.
 
-La capacité à paramétré une monade (via un module en OCaml, une classe de type
+La capacité à paramétrer une monade (via un module en OCaml, une classe de type
 en Haskell ou de l'héritage en programmation Orienté objets) est possible grâce
 au respect des lois monadiques.
 
@@ -845,11 +845,12 @@ Plutôt que :
 #+BEGIN_SRC haskell
 cartesian_product :: [(String, Int)]
 cartesian_product =
-  ["foo", "bar", "foobar"] >>= \x ->
-  [1, 3, 9] >>= \y -> return (x, y)
+  ["foo", "bar", "foobar"]
+  >>= \x -> [1, 3, 9]
+  >>= \y -> return (x, y)
 #+END_SRC
 
-L'avantage de cette notion est qu'elle permet d'appréhender certains concepts
+L'avantage de cette notation est qu'elle permet d'appréhender certains concepts
 (comme par exemple la lecture/écriture de fichiers) sans se soucier de la
 notion de monade.
 

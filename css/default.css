@@ -492,7 +492,7 @@ pre code {
   color: #bbb;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.5s ease-out;
+  transition: all 0.3s ease-out;
   text-decoration: none;
   font-family: sans-serif;
   font-size: 0.8;
@@ -508,9 +508,9 @@ pre code {
 }
 
 @media screen and (max-width: 640px) {
-  .history-tooltip {
+  /* .history-tooltip {
     flex-direction: column;
-  }
+  } */
 
   .history-tooltip .progress {
     display: none;

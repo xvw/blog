@@ -61,8 +61,10 @@ main = hakyll $ do
         route idRoute
         compile $ do
             posts <- recentFirst =<< loadAll "posts/*"
+            paintings <- recentFirst =<< loadAll "paintings/*"
             let archiveCtx =
                   listField "posts" postCtx (return posts) `mappend`
+                  listField "paintings" postCtx (return paintings) `mappend`
                   constField "title" "Archives"            `mappend`
                   defaultContext
 

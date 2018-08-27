@@ -1,6 +1,6 @@
 ---
 title: Marques-pages internes d'articles
-date: 2018-08-30
+date: 2018-08-27
 description: Amélioration de l'expérience utilisateur du blog
 ---
 
@@ -24,7 +24,7 @@ sous-jacentes, les inspirations et quelques commentaires divers et variés !
 
 Après la publication de [[../posts/monad.html][mon dernier article]], en plus des retours orthographiques,
 beaucoup de personnes m'ont fait remarquer qu'il était fort long. Que j'aurais
-peut être dût le fragmenter en plusieurs parties. Maintenant qu'il est publié,
+peut être dû le fragmenter en plusieurs parties. Maintenant qu'il est publié,
 je trouvais ça un peu dommage de le découper, d'autant plus que mon objectif
 était de fournir une base "théorique" pour d'éventuels articles futurs. Un autre
 retour récurrent portait sur l'absence de /playground/ pour observer le comportement
@@ -39,6 +39,11 @@ manière de découper sa lecture.
 L'objectif de cet article est de présenter une fonctionnalité que j'ai implémenté
 (tout en écrivant cet article) pour permettre de rendre la reprise de lecture
 plus facile et de motiver certains choix lié aux fonctionnalités ajoutées !
+
+La fonctionnalité est déjà observable "en haut à gauche" de l'article. Il est
+composé d'une *jauge* qui indique la progression de la lecture et quand "on
+revient sur un article", un *bouton* "Reprendre la lecture" apparait pour renvoyer
+à la dernière rubrique que l'utilisateur à entâmée.
 
 ** Sur le choix de Hakyll
 
@@ -91,6 +96,95 @@ reprendre un article là où on l'aurait laissé !
 
 Évidemment, il y aurait quelques différences avec la solution implémentée dans
 le /player/ de Netflix, pour des raisons de supports. Il est évident qu'un
-article propose n'est pas identique à une vidéo.
+article propose n'est pas identique à une vidéo. En effet, alors qu'un /timecode/
+est absolument objectif, la position de la page est relatif à plusieurs
+paramètres (par exemple, le coefficient de /zoom/ de la page, ou la taille
+horizontale de la fenêtre de navigation).
 
-Sans plus attendre, voyons le fonctionnement général de l'outil.
+** Implémentation concrète
+
+L'idée générale de l'extension est sauvegarder, dans src_javascript{LocalStorage}
+une information liée à l'article en cours de lecture. On défini un article, dans
+src_javascript{LocalStorage} via une clé unique construite sur base de l'URL de
+la page.
+
+La première approche, un peu naïve, que j'ai mis en oeuvre pour cette extension
+était de stocker à chaque /action de défilement/, l'/offset/ de la page. Soit
+le nombre de pixel défilé en hauteur. Cette approche fonctionne dans le meilleur
+des mondes. En effet, si entre la première session de lecture et la seconde, on
+modifie la largeur de la page, ou encore que l'article est édité, la "reprise" de
+la lecture risquerait d'envoyer vers une position assez aléatoire.
+
+Après quelques exéprimentations (par exemple, en utilisant un pourcentage de
+progression), j'ai décidé que j'allais utiliser les "*titres de paragraphes*" comme
+"étapes" de lecture.
+
+Concrètement, a chaque fois que je fais défiler la page :
+
+- j'attend un certain nombre de pixels pour ne pas faire de mutation d'état inutiles ;
+- je cherche la balise de titre (de src_html{<h1>} à src_html{<h6>}) précédente ;
+- je stocke son identifiant dans src_javascript{LocalStorage}.
+
+L'avantage de cette approche, est que la reprise de lecture ramène à la rubrique
+que le visiteur était en train de lire. Contrairement à une vidéo, il arrive
+parfois dans un article que la remise en contexte soit un peu plus compliqué.
+De ce fait, rédiriger vers la section que l'utilisateur était en train de lire
+permet de facilement *recontextualiser* la lecture "en cours de reprise".
+
+*** Choix liés à l'ergonomie
+
+J'ai essayé au maximum d'éviter de tomber dans le piège "de vouloir automatiser"
+un maximum de chose. De ce fait, la reprise de la lecture est une action
+ponctuelle *déclenchée par le lecteur*. En effet, j'ai l'intime conviction que le
+fait d'automatiser la reprise de la lecture aurait pût être perturbant !
+
+De plus, le bouton "reprendre la lecture" ne change *pas* de "cible" en cours de
+lecture, il est initialisé avec une "étape fixe", celle définie au moment où
+l'on arrive sur l'article. L'objectif de cette "approche" est de permettre de
+reprendre la lecture à l'endroit où on l'avait laissé, même si le lecteur a
+re-navigué dans l'article.
+
+*** Ajouts complémentaires
+
+En plus de sauvegarder la dernière rubrique de l'article parcourue par le lecteur,
+j'ai ajouté une jauge de progression pour rapidement évaluer le temps nécéssaire
+à la lecture. Cette fonctionnalité est un peu gadget mais je trouve qu'elle permet,
+en plus, d'avoir un /feedback/ très rapide sur le fait que le bouton "reprendre
+la lecture" déplace réellement dans le contenu de l'article.
+
+** Conclusion
+
+Concrètement, cet article ne présente pas grand chose de très intéressant.
+Il s'agit juste d'un ajout destiné à faciliter la consommation de "grands"
+articles pour ce blog ! Les idées que j'ai souhaité véhiculer, en plus de
+décrire une fonctionnalité, sont :
+
+- utiliser un outil de publication flexible permet d'intégrer des outils pour,
+  potentiellement, améliorer l'expérience de navigation ;
+- c'est sympa de s'inspirer de fonctionnalités présentes dans des outils que
+  l'on utilise au quotidien (ici, Netflix) ;
+- il faut ne pas hésiter à /itérer/ plusieurs fois sur la fonctionnalité pour
+  essayer de couvrir le périmètre initial (ici, la reprise de lecture).
+
+Pas plus tard que ce matin, [[https://twitter.com/robinkomiwes][Robin]] me faisait remarquer que j'aurais peut-être
+dû utiliser [[https://medium.com/][Medium]] pour les avantages que la plateforme offre (la communauté,
+le référencement, l'ergonomie de rédaction). Personnellement, je trouve que
+Hakyll me permet de rédiger dans un /workflow/ qui me convient, d'intégrer
+facilement du code, et d'ajouter des /widgets/ pour tenter d'améliorer l'expérience
+utilisateur. C'est pour ces raisons que je n'utiliserai pas Medium pour ma page
+personnelle.
+
+*** Travaux futurs
+
+Comme pour cet ajout, je tâcherai d'implémenter de nouveaux /widgets/ pertinents
+en fonction d'articles que je serai amené à écrire. Par exemple, des outils pour
+la visualisation de données ou des bac à sables interactifs pour la diffusion de
+code source.
+
+Mon but n'est pas d'implémenter tout ce qui me semble utile, mais de tâcher d'être
+chaque fois motivé par un article, histoire de ne pas tomber dans
+/l'over-engineering/ en voulant intégrer tout l'espace dans mon blog ! Ici,
+cette fonctionnalité répond à la longueur de l'article sur les monades.
+
+Si vous avez des suggestions ou des remarques, n'hésitez pas à m'en faire part
+via les multiples moyens de me contacter ! A bientôt.

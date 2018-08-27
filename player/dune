@@ -2,6 +2,6 @@
   (name player)
   (js_of_ocaml
     (flags :standard --opt 3))
-  (preprocess (pps js_of_ocaml-ppx))
+  (preprocess (pps js_of_ocaml-ppx lwt_ppx))
   (libraries js_of_ocaml-lwt js_of_ocaml-tyxml)
 )

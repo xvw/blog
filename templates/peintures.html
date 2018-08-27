@@ -8,12 +8,5 @@ de gens.
 
 <div class="articles">
   <h2>Sorties</h2>
-  <ol class="list-posts" reversed>
-    $for(paintings)$
-    <li class="publication-item">
-      <span>Le $date$ : </span>
-      <a href="$url$">$title$</a>
-    </li>
-    $endfor$
-  </ol>
+  $partial("templates/painting-list.html")$
 </div>
