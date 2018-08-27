@@ -444,7 +444,6 @@ pre code {
   padding: 12px;
   font-size: 0.8em;
   color: #bbb;
-  border-radius: 4px;
   align-items: center;
   position: fixed;
   top: 0;
@@ -475,20 +474,6 @@ pre code {
   transition: all 0.8s ease;
 }
 
-/* .history-tooltip > div {
-  display: flex;
-}
-
-.history-tooltip > div > span {
-  flex: 1;
-}
-
-.history-tooltip > div > * {
-  margin: 0 4px;
-  display: flex;
-  align-items: center;
-} */
-
 .history-tooltip a,
 .history-tooltip button {
   padding: 4px 12px;
@@ -513,15 +498,46 @@ pre code {
 }
 
 @media screen and (max-width: 640px) {
-  /* .history-tooltip {
-    flex-direction: column;
-  } */
+  .article {
+    margin-top: 12px;
+    padding: 16px;
+  }
 
-  .history-tooltip .progress {
+  .history-tooltip {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 8px;
+  }
+
+  .history-tooltip > .progress {
     display: none;
   }
 
-  .history-tooltip > * {
-    margin: 8px;
+  .history-tooltip a {
+    display: inline-block;
+    text-align: center;
+    margin: 0;
+    flex: 1;
+  }
+
+  .small-menu > a {
+    display: inline-block;
+  }
+
+  .publication-item {
+    margin-bottom: 24px;
+  }
+
+  .publication-item span {
+    display: block;
+  }
+
+  blockquote {
+    padding: 0;
+    margin: 12px 0;
+  }
+
+  h1.main-title {
+    font-size: 2em;
   }
 }
