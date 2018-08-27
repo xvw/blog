@@ -27,19 +27,24 @@ let find_pred_h offset =
       | [] -> None
     )
 
-let jump_to elt _ev =
+let jump_to elt _ev _ =
   let offset = max 0 (offset_y elt - 80) in
   let () = window ## scroll 0 offset in
-  false
+  Lwt.return_unit
+
+let a content =
+  let txt = (Dom_html.document ## createTextNode) (Js.string content) in
+  let lnk = Dom_html.createA document in
+  let () = Dom.appendChild lnk txt in
+  lnk
 
 let perform_ui path key =
   match Option.(S.get key >>= get_by_id), get_by_id "resume-box" with
   | Some elt, Some parent ->
     let () = clear parent in
-    let open Tyxml_js.Html in
-    let child =
-      a ~a:[a_onclick (jump_to elt)] [pcdata "Reprendre la lecture"]
-    in Dom.appendChild parent (Tyxml_js.To_dom.of_a child)
+    let child = a "Reprendre la lecture" in
+    let _ = Lwt_js_events.(async_loop click child (jump_to elt)) in
+    Dom.appendChild parent child
   | _, _ -> ()
 
 let compute_progress percent = function
