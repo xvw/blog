@@ -49,7 +49,7 @@ revient sur un article", un *bouton* "Reprendre la lecture" apparait pour renvoy
 
 Initialement, pour garder un contrôle total sur ce que je pouvais développer,
 j'ai décidé d'implémenter, à la main, tout mon système de publication. Comme
-souvent quand je travaille sur un projet personnel, j'a tâché de faire quelque
+souvent quand je travaille sur un projet personnel, j'ai tâché de faire quelque chose
 de très générique, qui pouvait faire tout ce à quoi je pensais (et potentiellement
 extensible /à gogo/). Le projet, qui devait être un simple générateur de blog
 statiques est devenu titanesque, à tel point que 3 mois après avoir démarré le
@@ -115,7 +115,7 @@ des mondes. En effet, si entre la première session de lecture et la seconde, on
 modifie la largeur de la page, ou encore que l'article est édité, la "reprise" de
 la lecture risquerait d'envoyer vers une position assez aléatoire.
 
-Après quelques exéprimentations (par exemple, en utilisant un pourcentage de
+Après quelques expérimentations (par exemple, en utilisant un pourcentage de
 progression), j'ai décidé que j'allais utiliser les "*titres de paragraphes*" comme
 "étapes" de lecture.
 
