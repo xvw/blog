@@ -1,0 +1,21 @@
+---
+title: 3h au "Hall de glisse", Lille
+date: 2018-09-16
+---
+
+On est arrivé à 16h, on avait donc peu de temps (et pour ma part, peu de
+couleurs différentes de la dernière fois). Deux styles très différents
+mais ça donne un rendu assez rigolo ! Pour la prochaine, j'essaye de changer
+de couleurs ! Une fois de plus avec *Gozar*.
+
+#+CAPTION: Rendu final !
+#+NAME: fig:goz22
+[[../images/goz22.png]]
+
+#+CAPTION: Ma partie !
+#+NAME: fig:goz21
+[[../images/goz21.png]]
+
+#+CAPTION: Partie de Gozar !
+#+NAME: fig:goz23
+[[../images/goz23.png]]
