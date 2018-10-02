@@ -22,3 +22,4 @@ _build
 *.bc.js
 *.bc.map
 *.install
+node_modules
