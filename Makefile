@@ -29,7 +29,7 @@ push: blog-rebuild
 	  && git push origin master
 	git add deployement
 	git commit -m 'site update'
-	git push origin master
+	git push
 
 
 %.png : graph/%.dot
