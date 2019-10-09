@@ -1,3 +1,5 @@
+open Js_of_ocaml
+
 let id x = x
 
 module type REQ_OPTION =

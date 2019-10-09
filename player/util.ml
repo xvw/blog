@@ -1,3 +1,5 @@
+open Js_of_ocaml
+    
 let id x = x
 let log x = Firebug.console ## log x
 let warn x = Firebug.console ## warn x

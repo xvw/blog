@@ -1,3 +1,5 @@
+open Js_of_ocaml
+    
 val id : 'a -> 'a
 val log: 'a -> unit
 val warn : 'a -> unit

@@ -1,6 +1,8 @@
+open Js_of_ocaml
 open Util
 open Optional
 module S = Storage.Local
+module Lwt_js_events = Js_of_ocaml_lwt.Lwt_js_events
 
 let make_storage_key path =
   "--xvw-scroll-position:" ^ path

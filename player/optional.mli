@@ -1,3 +1,5 @@
+open Js_of_ocaml
+    
 module type OPTION =
 sig
   type 'a t
